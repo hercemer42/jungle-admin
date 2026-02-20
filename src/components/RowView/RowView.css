@@ -1,0 +1,37 @@
+.selected-customer {
+  ul {
+    list-style: none;
+    padding: 0px;
+  }
+
+  li {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-left: 0px;
+    margin-bottom: 5px;
+  }
+
+  input,
+  .property-value {
+    margin-left: 30px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .edit {
+      background: rgb(0, 170, 0);
+      color: white;
+    }
+
+    .cancel {
+      background: lightgray;
+      margin-right: 10px;
+    }
+  }
+}

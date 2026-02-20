@@ -1,24 +1,27 @@
-table {
+.customer-table {
+  table {
     width: 100%;
-}
+  }
 
-thead {
-    background : lightgrey;
-    margin-bottom : 20px;
-}
+  thead {
+    background: lightgrey;
+    margin-bottom: 20px;
+  }
 
-tbody tr:first-child td {
+  tbody tr:first-child td {
     padding-top: 20px;
-}
+  }
 
-th {
+  th {
     cursor: pointer;
-}
+  }
 
-td {
+  td {
     padding: 5px 10px;
-}
+    cursor: pointer;
+  }
 
-tbody tr:nth-child(even) {
+  tbody tr:nth-child(even) {
     background: #f1f1f1;
+  }
 }
