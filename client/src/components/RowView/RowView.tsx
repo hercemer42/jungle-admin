@@ -28,10 +28,12 @@ function RowView() {
         </div>
         <ul>
           {tableProperties.map((tableProperty) => (
-            <li>
+            <li key={tableProperty}>
               <label>{tableProperty}</label>
               {editing ? (
-                <input value={selectedRow[tableProperty]}></input>
+                <input
+                  defaultValue={String(selectedRow[tableProperty])}
+                ></input>
               ) : (
                 <div className="property-value">
                   {selectedRow[tableProperty]}
