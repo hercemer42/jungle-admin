@@ -13,6 +13,7 @@ function Table() {
     previousPage,
     pageCount,
     openRow,
+    currentTable,
   } = useTable();
 
   return (
@@ -37,11 +38,11 @@ function Table() {
                 ))}
               </tr>
             ))
-          ) : (
+          ) : currentTable ? (
             <tr>
               <td colSpan={tableProperties.length}>No results found</td>
             </tr>
-          )}
+          ) : null}
         </tbody>
       </table>
       {pageCount > 0 && (

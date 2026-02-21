@@ -1,0 +1,24 @@
+.tables {
+  margin-top: 47px;
+  padding-top: 20px;
+  padding-left: 20px;
+  list-style: none;
+  border: thin lightgray solid;
+  height: 100%;
+
+  li {
+    padding: 10px;
+    cursor: pointer;
+    margin-right: 20px;
+    text-transform: capitalize;
+    border-radius: 10px;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+
+    &.selected {
+      background-color: lightgreen;
+    }
+  }
+}

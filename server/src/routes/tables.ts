@@ -1,26 +1,15 @@
 import { Router } from "express";
-import { getClient } from "../db.ts";
+import { getTableNames } from "../queries/tables.ts";
 
-const tableRouter = Router();
+const tablesRouter = Router();
 
-tableRouter.get("/", async (req, res) => {
-  const client = await getClient();
-  const entries = await client.query(`
-    SELECT table_name
-    FROM information_schema.tables
-    WHERE table_schema = 'public'
-    ORDER BY table_name
-  `);
-  await client.end();
-  res.json(parseTableNames(entries));
-});
-
-const parseTableNames = (entries: any) => {
-  return {
-    tableNames: entries.rows.map((row: any) => {
-      return row.table_name;
+tablesRouter.get("/", async (req, res) =>
+  getTableNames()
+    .then((tableNames) => res.json({ tableNames }))
+    .catch((err) => {
+      console.error(err);
+      res.status(err.status).json({ error: err.message });
     }),
-  };
-};
+);
 
-export default tableRouter;
+export default tablesRouter;

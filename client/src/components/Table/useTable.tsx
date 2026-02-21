@@ -1,11 +1,12 @@
-import { useTableDataStore } from "../../store/useTableDataStore";
-import type { Row } from "../../data/table_data";
+import { useTableDataStore, type Row } from "../../store/useTableDataStore";
 import { useEffect, useMemo, useState } from "react";
+import { useTablesStore } from "../../store/useTablesStore";
 
 export function useTable() {
   const rows = useTableDataStore((state) => state.rows);
   const tableProperties = useTableDataStore((state) => state.tableProperties);
   const filters = useTableDataStore((state) => state.filters);
+  const currentTable = useTablesStore((state) => state.currentTable);
   const openRowView = useTableDataStore((state) => state.openRowView);
   const [sortColumn, setSortColumn] = useState<keyof Row | null>(null);
   const [sortDesc, setSortDesc] = useState(true);
@@ -85,5 +86,6 @@ export function useTable() {
     previousPage,
     pageCount,
     openRow,
+    currentTable,
   };
 }
