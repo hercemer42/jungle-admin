@@ -1,30 +1,31 @@
-import { useCustomerStore } from "../../store/useCustomerStore";
-import type { Customer } from "../../data/customer_data";
+import { useTableDataStore } from "../../store/useTableDataStore";
+import type { Row } from "../../data/table_data";
 import { useEffect, useMemo, useState } from "react";
 
 export function useTable() {
-  const customers = useCustomerStore((state) => state.customers);
-  const tableProperties = useCustomerStore((state) => state.tableProperties);
-  const filters = useCustomerStore((state) => state.filters);
-  const openRowView = useCustomerStore((state) => state.openRowView);
-  const [sortColumn, setSortColumn] = useState<keyof Customer | null>(null);
+  const rows = useTableDataStore((state) => state.rows);
+  const tableProperties = useTableDataStore((state) => state.tableProperties);
+  const filters = useTableDataStore((state) => state.filters);
+  const openRowView = useTableDataStore((state) => state.openRowView);
+  const [sortColumn, setSortColumn] = useState<keyof Row | null>(null);
   const [sortDesc, setSortDesc] = useState(true);
   const [page, setPage] = useState(1);
   const recordsPerPage = 10;
   const startRow = (page - 1) * recordsPerPage;
 
-  const filteredCustomers = useMemo(() => {
-    return customers.filter((customer) =>
-      Object.entries(filters).every((filter) => {
-        const customerValue = customer[filter[0] as keyof Customer] + "";
-        return customerValue.includes(filter[1]);
+  const filteredRows = useMemo(() => {
+    return rows.filter((row) =>
+      Object.entries(filters).every(([key, value]) => {
+        if (!value) return true;
+        const rowValue = row[key] + "";
+        return rowValue.includes(value);
       }),
     );
-  }, [customers, filters]);
+  }, [rows, filters]);
 
-  const pageCount = Math.ceil(filteredCustomers.length / recordsPerPage);
+  const pageCount = Math.ceil(filteredRows.length / recordsPerPage);
 
-  const sort = (property: keyof Customer) => {
+  const sort = (property: keyof Row) => {
     if (property === sortColumn) {
       if (sortDesc) {
         setSortDesc(false);
@@ -39,32 +40,29 @@ export function useTable() {
     setSortColumn(property);
   };
 
-  const sortedCustomers = useMemo(
+  const sortedRows = useMemo(
     () =>
-      filteredCustomers.toSorted((a, b) => {
+      filteredRows.toSorted((a, b) => {
         if (!sortColumn) return 0;
-        const aVal = a[sortColumn];
-        const bVal = b[sortColumn];
+        const aVal = a[sortColumn] || "";
+        const bVal = b[sortColumn] || "";
 
         if (aVal > bVal) return sortDesc ? 1 : -1;
         if (aVal < bVal) return sortDesc ? -1 : 1;
         return 0;
       }),
-    [filteredCustomers, sortColumn, sortDesc],
+    [filteredRows, sortColumn, sortDesc],
   );
 
-  const openCustomerRow = (customer: Customer) => {
-    openRowView(customer);
+  const openRow = (row: Row) => {
+    openRowView(row);
   };
 
   useEffect(() => {
     setPage(1);
-  }, [filters, sortedCustomers]);
+  }, [filters, sortedRows]);
 
-  const paginatedCustomers = sortedCustomers.slice(
-    startRow,
-    startRow + recordsPerPage,
-  );
+  const paginatedRows = sortedRows.slice(startRow, startRow + recordsPerPage);
 
   const nextPage = () => {
     if (page >= pageCount) return;
@@ -80,12 +78,12 @@ export function useTable() {
     tableProperties,
     sort,
     sortColumn,
-    paginatedCustomers,
+    paginatedRows,
     sortDesc,
     page,
     nextPage,
     previousPage,
     pageCount,
-    openCustomerRow,
+    openRow,
   };
 }

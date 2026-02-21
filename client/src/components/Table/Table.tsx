@@ -4,7 +4,7 @@ import "./Table.css";
 function Table() {
   const {
     tableProperties,
-    paginatedCustomers,
+    paginatedRows,
     sort,
     sortColumn,
     sortDesc,
@@ -12,12 +12,12 @@ function Table() {
     nextPage,
     previousPage,
     pageCount,
-    openCustomerRow,
+    openRow,
   } = useTable();
 
   return (
     <div>
-      <table className="customer-table">
+      <table className="table-rows">
         <thead>
           <tr>
             {tableProperties.map((property) => (
@@ -29,11 +29,11 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {paginatedCustomers.length > 0 ? (
-            paginatedCustomers.map((customer) => (
-              <tr key={customer.id} onClick={() => openCustomerRow(customer)}>
+          {paginatedRows.length > 0 ? (
+            paginatedRows.map((row) => (
+              <tr key={row.id} onClick={() => openRow(row)}>
                 {tableProperties.map((property) => (
-                  <td key={property}>{customer[property]}</td>
+                  <td key={property}>{row[property]}</td>
                 ))}
               </tr>
             ))
