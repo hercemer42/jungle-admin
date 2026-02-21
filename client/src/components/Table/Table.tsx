@@ -31,7 +31,7 @@ function Table() {
         <tbody>
           {paginatedRows.length > 0 ? (
             paginatedRows.map((row) => (
-              <tr key={row.id} onClick={() => openRow(row)}>
+              <tr key={String(row.id)} onClick={() => openRow(row)}>
                 {tableProperties.map((property) => (
                   <td key={property}>{row[property]}</td>
                 ))}

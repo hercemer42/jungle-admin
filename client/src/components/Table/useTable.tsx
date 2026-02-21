@@ -47,8 +47,8 @@ export function useTable() {
         const aVal = a[sortColumn] || "";
         const bVal = b[sortColumn] || "";
 
-        if (aVal > bVal) return sortDesc ? 1 : -1;
-        if (aVal < bVal) return sortDesc ? -1 : 1;
+        if (aVal > bVal) return sortDesc ? -1 : 1;
+        if (aVal < bVal) return sortDesc ? 1 : -1;
         return 0;
       }),
     [filteredRows, sortColumn, sortDesc],
