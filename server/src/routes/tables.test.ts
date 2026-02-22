@@ -44,7 +44,7 @@ describe("GET /api/tables", () => {
     pool.query = originalQuery;
   });
 
-  it("should return table details for a valid table name", async () => {
+  it("should return table details and types for a valid table name", async () => {
     const res = await request(app).get("/api/tables/customers");
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -59,6 +59,8 @@ describe("GET /api/tables", () => {
         expect.objectContaining({ name: "id", type: "number" }),
         expect.objectContaining({ name: "first_name", type: "string" }),
         expect.objectContaining({ name: "created_at", type: "datetime" }),
+        expect.objectContaining({ name: "date_of_birth", type: "date" }),
+        expect.objectContaining({ name: "is_active", type: "boolean" }),
       ]),
     );
   });

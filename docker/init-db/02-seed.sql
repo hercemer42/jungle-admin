@@ -68,6 +68,8 @@ CREATE TABLE public.customers (
     address text,
     city character varying(100),
     country character varying(100) DEFAULT 'US'::character varying,
+    is_active boolean DEFAULT true,
+    date_of_birth date,
     created_at timestamp without time zone DEFAULT now(),
     updated_at timestamp without time zone DEFAULT now()
 );
@@ -296,57 +298,57 @@ COPY public.categories (id, name, description, parent_id) FROM stdin;
 -- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.customers (id, first_name, last_name, email, phone, address, city, country, created_at, updated_at) FROM stdin;
-1	Alice	Johnson	alice.johnson@example.com	555-0101	123 Maple St	Portland	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-2	Bob	Smith	bob.smith@example.com	555-0102	456 Oak Ave	Seattle	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-3	Carol	Williams	carol.w@example.com	555-0103	789 Pine Rd	San Francisco	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-4	David	Brown	david.b@example.com	555-0104	321 Elm Blvd	Austin	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-5	Eva	Martinez	eva.m@example.com	555-0105	654 Cedar Ln	Denver	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-6	Frank	Garcia	frank.g@example.com	555-0106	12 Birch Way	Chicago	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-7	Grace	Lee	grace.lee@example.com	555-0107	88 Willow Dr	New York	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-8	Henry	Wilson	henry.w@example.com	555-0108	44 Spruce Ct	Boston	US	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-9	Irene	Taylor	irene.t@example.com	555-0109	7 Ash St	Toronto	CA	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-10	James	Anderson	james.a@example.com	555-0110	99 Redwood Pl	London	GB	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
-11	Kevin	Chen	kevin.chen@example.com	555-0111	201 Magnolia Ave	Los Angeles	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-12	Laura	Nguyen	laura.n@example.com	555-0112	302 Dogwood St	Houston	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-13	Marcus	Patel	marcus.p@example.com	555-0113	45 Cypress Ct	Phoenix	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-14	Nina	Kim	nina.kim@example.com	555-0114	678 Juniper Way	Philadelphia	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-15	Oscar	Rivera	oscar.r@example.com	555-0115	112 Hawthorn Dr	San Antonio	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-16	Priya	Sharma	priya.s@example.com	555-0116	89 Sycamore Blvd	San Diego	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-17	Quinn	O'Brien	quinn.ob@example.com	555-0117	33 Chestnut Ln	Dallas	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-18	Rosa	Fernandez	rosa.f@example.com	555-0118	567 Poplar Ave	Miami	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-19	Samuel	Jackson	samuel.j@example.com	555-0119	234 Alder St	Atlanta	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-20	Tara	Singh	tara.singh@example.com	555-0120	901 Linden Rd	Minneapolis	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-21	Umar	Ali	umar.ali@example.com	555-0121	15 Beech Pl	Detroit	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-22	Valerie	Thompson	valerie.t@example.com	555-0122	440 Hickory Dr	Nashville	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-23	Walter	Kowalski	walter.k@example.com	555-0123	78 Walnut Ct	Milwaukee	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-24	Xena	Papadopoulos	xena.p@example.com	555-0124	162 Fir St	Salt Lake City	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-25	Yusuf	Hassan	yusuf.h@example.com	555-0125	305 Hemlock Ave	Charlotte	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-26	Zoe	Martin	zoe.martin@example.com	555-0126	29 Sequoia Blvd	Vancouver	CA	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-27	Adrian	Dubois	adrian.d@example.com	555-0127	84 Rue de Lyon	Montreal	CA	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-28	Bianca	Rossi	bianca.r@example.com	555-0128	17 Via Roma	Rome	IT	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-29	Carlos	Mendez	carlos.m@example.com	555-0129	56 Calle Mayor	Madrid	ES	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-30	Diana	Müller	diana.m@example.com	555-0130	23 Berliner Str	Berlin	DE	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-31	Ethan	Brooks	ethan.b@example.com	555-0131	410 Maple Cir	Portland	US	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-32	Fatima	Al-Rashid	fatima.ar@example.com	555-0132	72 Palm Dr	Dubai	AE	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-33	George	Nakamura	george.n@example.com	555-0133	9 Sakura Ave	Tokyo	JP	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-34	Hannah	Okonkwo	hannah.o@example.com	555-0134	31 Baobab Rd	Lagos	NG	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-35	Ivan	Petrov	ivan.petrov@example.com	555-0135	88 Nevsky Prospect	St Petersburg	RU	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-36	Julia	Costa	julia.c@example.com	555-0136	145 Rua Augusta	Sao Paulo	BR	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-37	Kyle	Fitzgerald	kyle.f@example.com	555-0137	60 Shamrock Ln	Dublin	IE	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-38	Leila	Johansson	leila.j@example.com	555-0138	22 Birka Vägen	Stockholm	SE	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-39	Miguel	Santos	miguel.s@example.com	555-0139	103 Alameda Ave	Lisbon	PT	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-40	Nadia	Leblanc	nadia.l@example.com	555-0140	47 Rue Principale	Paris	FR	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-41	Oliver	Wright	oliver.w@example.com	555-0141	519 King St	Sydney	AU	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-42	Petra	Novak	petra.n@example.com	555-0142	8 Hradčany Sq	Prague	CZ	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-43	Rafael	Torres	rafael.t@example.com	555-0143	200 Reforma Ave	Mexico City	MX	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-44	Sofia	Andersson	sofia.a@example.com	555-0144	65 Drottninggatan	Gothenburg	SE	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-45	Thomas	Weber	thomas.w@example.com	555-0145	14 Mozartstr	Vienna	AT	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-46	Uma	Krishnan	uma.k@example.com	555-0146	37 MG Road	Bangalore	IN	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-47	Victor	Larsen	victor.l@example.com	555-0147	91 Nyhavn	Copenhagen	DK	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-48	Wendy	Chang	wendy.c@example.com	555-0148	128 Zhongshan Rd	Taipei	TW	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-49	Xavier	Moreau	xavier.m@example.com	555-0149	53 Av des Champs	Lyon	FR	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
-50	Yara	El-Amin	yara.ea@example.com	555-0150	11 Nile Corniche	Cairo	EG	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+COPY public.customers (id, first_name, last_name, email, phone, address, city, country, is_active, date_of_birth, created_at, updated_at) FROM stdin;
+1	Alice	Johnson	alice.johnson@example.com	555-0101	123 Maple St	Portland	US	t	1990-01-15	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+2	Bob	Smith	bob.smith@example.com	555-0102	456 Oak Ave	Seattle	US	f	1985-07-22	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+3	Carol	Williams	carol.w@example.com	555-0103	789 Pine Rd	San Francisco	US	t	1992-03-10	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+4	David	Brown	david.b@example.com	555-0104	321 Elm Blvd	Austin	US	t	1988-11-28	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+5	Eva	Martinez	eva.m@example.com	555-0105	654 Cedar Ln	Denver	US	f	1995-06-03	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+6	Frank	Garcia	frank.g@example.com	555-0106	12 Birch Way	Chicago	US	t	1979-09-17	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+7	Grace	Lee	grace.lee@example.com	555-0107	88 Willow Dr	New York	US	t	1993-12-01	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+8	Henry	Wilson	henry.w@example.com	555-0108	44 Spruce Ct	Boston	US	f	1982-04-25	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+9	Irene	Taylor	irene.t@example.com	555-0109	7 Ash St	Toronto	CA	t	1991-08-14	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+10	James	Anderson	james.a@example.com	555-0110	99 Redwood Pl	London	GB	t	1987-02-20	2026-02-17 11:05:29.883839	2026-02-17 11:05:29.883839
+11	Kevin	Chen	kevin.chen@example.com	555-0111	201 Magnolia Ave	Los Angeles	US	t	1994-05-12	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+12	Laura	Nguyen	laura.n@example.com	555-0112	302 Dogwood St	Houston	US	f	1989-10-30	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+13	Marcus	Patel	marcus.p@example.com	555-0113	45 Cypress Ct	Phoenix	US	t	1996-01-08	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+14	Nina	Kim	nina.kim@example.com	555-0114	678 Juniper Way	Philadelphia	US	t	1983-07-19	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+15	Oscar	Rivera	oscar.r@example.com	555-0115	112 Hawthorn Dr	San Antonio	US	t	1990-11-05	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+16	Priya	Sharma	priya.s@example.com	555-0116	89 Sycamore Blvd	San Diego	US	f	1997-03-22	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+17	Quinn	O'Brien	quinn.ob@example.com	555-0117	33 Chestnut Ln	Dallas	US	t	1986-09-14	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+18	Rosa	Fernandez	rosa.f@example.com	555-0118	567 Poplar Ave	Miami	US	t	1992-12-27	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+19	Samuel	Jackson	samuel.j@example.com	555-0119	234 Alder St	Atlanta	US	f	1981-06-11	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+20	Tara	Singh	tara.singh@example.com	555-0120	901 Linden Rd	Minneapolis	US	t	1994-08-03	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+21	Umar	Ali	umar.ali@example.com	555-0121	15 Beech Pl	Detroit	US	t	\N	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+22	Valerie	Thompson	valerie.t@example.com	555-0122	440 Hickory Dr	Nashville	US	f	1998-04-16	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+23	Walter	Kowalski	walter.k@example.com	555-0123	78 Walnut Ct	Milwaukee	US	t	1984-10-09	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+24	Xena	Papadopoulos	xena.p@example.com	555-0124	162 Fir St	Salt Lake City	US	t	1991-02-28	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+25	Yusuf	Hassan	yusuf.h@example.com	555-0125	305 Hemlock Ave	Charlotte	US	t	\N	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+26	Zoe	Martin	zoe.martin@example.com	555-0126	29 Sequoia Blvd	Vancouver	CA	t	1993-05-18	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+27	Adrian	Dubois	adrian.d@example.com	555-0127	84 Rue de Lyon	Montreal	CA	f	1980-12-03	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+28	Bianca	Rossi	bianca.r@example.com	555-0128	17 Via Roma	Rome	IT	t	1996-08-21	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+29	Carlos	Mendez	carlos.m@example.com	555-0129	56 Calle Mayor	Madrid	ES	t	1984-03-07	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+30	Diana	Müller	diana.m@example.com	555-0130	23 Berliner Str	Berlin	DE	f	1991-11-14	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+31	Ethan	Brooks	ethan.b@example.com	555-0131	410 Maple Cir	Portland	US	t	1987-06-29	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+32	Fatima	Al-Rashid	fatima.ar@example.com	555-0132	72 Palm Dr	Dubai	AE	t	1994-02-11	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+33	George	Nakamura	george.n@example.com	555-0133	9 Sakura Ave	Tokyo	JP	f	1989-09-25	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+34	Hannah	Okonkwo	hannah.o@example.com	555-0134	31 Baobab Rd	Lagos	NG	t	\N	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+35	Ivan	Petrov	ivan.petrov@example.com	555-0135	88 Nevsky Prospect	St Petersburg	RU	t	1983-04-16	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+36	Julia	Costa	julia.c@example.com	555-0136	145 Rua Augusta	Sao Paulo	BR	f	1995-10-02	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+37	Kyle	Fitzgerald	kyle.f@example.com	555-0137	60 Shamrock Ln	Dublin	IE	t	1990-07-13	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+38	Leila	Johansson	leila.j@example.com	555-0138	22 Birka Vägen	Stockholm	SE	t	1986-01-30	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+39	Miguel	Santos	miguel.s@example.com	555-0139	103 Alameda Ave	Lisbon	PT	f	1992-06-08	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+40	Nadia	Leblanc	nadia.l@example.com	555-0140	47 Rue Principale	Paris	FR	t	1988-12-19	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+41	Oliver	Wright	oliver.w@example.com	555-0141	519 King St	Sydney	AU	t	1993-03-24	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+42	Petra	Novak	petra.n@example.com	555-0142	8 Hradčany Sq	Prague	CZ	f	1997-08-05	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+43	Rafael	Torres	rafael.t@example.com	555-0143	200 Reforma Ave	Mexico City	MX	t	1981-11-22	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+44	Sofia	Andersson	sofia.a@example.com	555-0144	65 Drottninggatan	Gothenburg	SE	t	\N	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+45	Thomas	Weber	thomas.w@example.com	555-0145	14 Mozartstr	Vienna	AT	f	1985-05-17	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+46	Uma	Krishnan	uma.k@example.com	555-0146	37 MG Road	Bangalore	IN	t	1994-09-09	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+47	Victor	Larsen	victor.l@example.com	555-0147	91 Nyhavn	Copenhagen	DK	t	1990-02-14	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+48	Wendy	Chang	wendy.c@example.com	555-0148	128 Zhongshan Rd	Taipei	TW	f	1987-07-26	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+49	Xavier	Moreau	xavier.m@example.com	555-0149	53 Av des Champs	Lyon	FR	t	1992-04-01	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
+50	Yara	El-Amin	yara.ea@example.com	555-0150	11 Nile Corniche	Cairo	EG	t	1996-10-31	2026-02-20 14:00:14.843694	2026-02-20 14:00:14.843694
 \.
 
 
