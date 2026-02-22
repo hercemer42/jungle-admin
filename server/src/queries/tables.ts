@@ -1,4 +1,3 @@
-import { Query } from "pg";
 import { pool } from "../db";
 
 let cachedTableNames: string[] | null = null;
@@ -11,6 +10,10 @@ class QueryError extends Error {
     super(message);
   }
 }
+
+const clearCache = () => {
+  cachedTableNames = null;
+};
 
 const getTableNames = async () => {
   if (cachedTableNames) {
@@ -56,4 +59,4 @@ const getTableData = async (tableName: string) => {
   }
 };
 
-export { getTableNames, getTableData };
+export { getTableNames, getTableData, clearCache };

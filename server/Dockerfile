@@ -5,4 +5,4 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-CMD ["npx", "tsx", "watch", "src/index.ts"]
+CMD ["npx", "tsx", "watch", "src/server.ts"]
