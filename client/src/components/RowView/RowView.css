@@ -24,7 +24,8 @@
     justify-content: space-between;
     align-items: center;
 
-    .edit {
+    .edit,
+    .save {
       background: rgb(0, 170, 0);
       color: white;
     }

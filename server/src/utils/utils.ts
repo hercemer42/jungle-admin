@@ -14,10 +14,15 @@ const oidToType: Record<number, string> = {
   1184: "datetime", // timestamptz
 };
 
-function getDataFromPostgresField(field: any) {
+function getDataFromPostgresField(
+  field: any,
+  nonEditableColumns: Set<string>,
+) {
+  const type = oidToType[field.dataTypeID] || "string";
   return {
-    type: oidToType[field.dataTypeID] || "string",
+    type,
     name: field.name,
+    editable: type !== "datetime" && !nonEditableColumns.has(field.name),
   };
 }
 

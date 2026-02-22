@@ -1,55 +1,77 @@
 import { Modal } from "../UI/Modal/Modal";
-import { useTableDataStore } from "../../store/useTableDataStore";
 import "./RowView.css";
-import { useState } from "react";
+import useRowView from "./useRowView";
 
 function RowView() {
-  const selectedRow = useTableDataStore((state) => state.selectedRow);
-  const closeRowView = useTableDataStore((state) => state.closeRowView);
-  const tableProperties = useTableDataStore((state) => state.tableProperties);
-  const [editing, setEditing] = useState(false);
+  const {
+    handleSave,
+    editing,
+    setEditing,
+    selectedRow,
+    closeRowView,
+    tableProperties,
+  } = useRowView();
 
   return selectedRow ? (
     <Modal onClose={closeRowView}>
       <div className="selected-row">
-        <div className="header">
-          <h3>Record details</h3>
-          <div className="controls">
-            {editing ? (
-              <button className="cancel" onClick={() => setEditing(false)}>
-                Cancel
-              </button>
-            ) : (
-              <button className="edit" onClick={() => setEditing(true)}>
-                Edit
-              </button>
-            )}
-          </div>
-        </div>
-        <ul>
-          {tableProperties.map((tableProperty) => (
-            <li key={tableProperty.name}>
-              <label>{tableProperty.name}</label>
+        <form onSubmit={handleSave}>
+          <div className="header">
+            <h3>Record details</h3>
+            <div className="controls">
               {editing ? (
-                <input
-                  type={tableProperty.type}
-                  name={tableProperty.name}
-                  {...(tableProperty.type === "checkbox"
-                    ? { checked: Boolean(selectedRow[tableProperty.name]) }
-                    : {
-                        defaultValue: String(
-                          selectedRow[tableProperty.name] ?? "",
-                        ),
-                      })}
-                ></input>
+                <>
+                  <button
+                    type="button"
+                    className="cancel"
+                    onClick={() => setEditing(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button className="save" type="submit">
+                    Save
+                  </button>
+                </>
               ) : (
-                <div className="property-value">
-                  {String(selectedRow[tableProperty.name] ?? "")}
-                </div>
+                <button
+                  type="button"
+                  className="edit"
+                  onClick={() => setEditing(true)}
+                >
+                  Edit
+                </button>
               )}
-            </li>
-          ))}
-        </ul>
+            </div>
+          </div>
+          <ul>
+            {tableProperties.map((tableProperty) => (
+              <li key={tableProperty.name}>
+                <label>{tableProperty.name}</label>
+                {editing && tableProperty.editable ? (
+                  <input
+                    type={tableProperty.type}
+                    name={tableProperty.name}
+                    {...(tableProperty.type === "checkbox"
+                      ? {
+                          defaultChecked: Boolean(
+                            selectedRow[tableProperty.name],
+                          ),
+                        }
+                      : {
+                          defaultValue: String(
+                            selectedRow[tableProperty.name] ?? "",
+                          ),
+                        })}
+                  ></input>
+                ) : (
+                  <div className="property-value">
+                    {String(selectedRow[tableProperty.name] ?? "")}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </form>
       </div>
     </Modal>
   ) : null;

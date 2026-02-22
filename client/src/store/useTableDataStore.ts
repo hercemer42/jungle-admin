@@ -1,13 +1,16 @@
 import { create } from "zustand";
-import { fetchTable } from "../api/table.ts";
+import { fetchTable } from "../api/tables.ts";
+import { saveRow } from "../api/tables.ts";
+
 import {
   convertServerDatesToInputDates,
   convertServerTypeToInputType,
 } from "../utils/utils.ts";
+import { useTablesStore } from "./useTablesStore.ts";
 
 type Row = Record<string, string | number | boolean | null | undefined>;
 
-type Field = { name: string; type: string };
+type Field = { name: string; type: string; editable: boolean };
 
 interface TableDataStore {
   rows: Row[];
@@ -18,6 +21,7 @@ interface TableDataStore {
   selectedRow: Row | null;
   openRowView: (row: Row) => void;
   closeRowView: () => void;
+  saveRow: (updatedRow: Row) => void;
 }
 
 const useTableDataStore = create<TableDataStore>((set) => ({
@@ -52,6 +56,29 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     set(() => ({
       selectedRow: null,
     })),
+  saveRow: async (updatedRow) => {
+    const selectedRow = useTableDataStore.getState().selectedRow;
+    if (!selectedRow) return;
+    const currentTable = useTablesStore.getState().currentTable;
+    if (!currentTable) return;
+    const savedRow = await saveRow(
+      currentTable,
+      updatedRow,
+      selectedRow.id as number,
+    );
+    set((state) => {
+      const convertedRow = convertServerDatesToInputDates(
+        [savedRow],
+        state.tableProperties,
+      )[0];
+      return {
+        selectedRow: convertedRow,
+        rows: state.rows.map((row) =>
+          row.id === savedRow.id ? convertedRow : row,
+        ),
+      };
+    });
+  },
 }));
 
 export { useTableDataStore };

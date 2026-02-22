@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   useTableDataStore,
   type Field,
@@ -18,12 +18,12 @@ const fakeRow: Row = {
 };
 
 const tableProperties: Field[] = [
-  { name: "id", type: "number" },
-  { name: "name", type: "text" },
-  { name: "totalSpent", type: "number" },
-  { name: "isActive", type: "checkbox" },
-  { name: "dateOfBirth", type: "date" },
-  { name: "createdAt", type: "datetime-local" },
+  { name: "id", type: "number", editable: false },
+  { name: "name", type: "text", editable: true },
+  { name: "totalSpent", type: "number", editable: true },
+  { name: "isActive", type: "checkbox", editable: true },
+  { name: "dateOfBirth", type: "date", editable: true },
+  { name: "createdAt", type: "datetime-local", editable: false },
 ];
 
 beforeEach(() => {
@@ -69,14 +69,17 @@ describe("RowView", () => {
     const numberInputs = screen.getAllByRole("spinbutton");
     const checkboxInputs = screen.getAllByRole("checkbox");
     expect(textInputs).toHaveLength(1);
-    expect(numberInputs).toHaveLength(2);
+    expect(numberInputs).toHaveLength(1);
     expect(checkboxInputs).toHaveLength(1);
-    expect(numberInputs[0]).toHaveValue(1);
     expect(textInputs[0]).toHaveValue("Alice Smith");
-    expect(numberInputs[1]).toHaveValue(500);
+    expect(numberInputs[0]).toHaveValue(500);
     expect(checkboxInputs[0]).toBeChecked();
-    expect(screen.getByDisplayValue("1990-01-15")).toHaveAttribute("type", "date");
-    expect(screen.getByDisplayValue("2026-02-17T11:05")).toHaveAttribute("type", "datetime-local");
+    expect(screen.getByDisplayValue("1990-01-15")).toHaveAttribute(
+      "type",
+      "date",
+    );
+    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("2026-02-17T11:05")).toBeInTheDocument();
   });
 
   it("switches back to text display when Cancel is clicked", async () => {
@@ -89,6 +92,49 @@ describe("RowView", () => {
     expect(screen.queryAllByRole("spinbutton")).toHaveLength(0);
     expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
     expect(screen.getByText("Edit")).toBeInTheDocument();
+  });
+
+  it("shows Save button when editing", async () => {
+    render(<RowView />);
+
+    await userEvent.click(screen.getByText("Edit"));
+
+    expect(screen.getByText("Save")).toBeInTheDocument();
+    expect(screen.getByText("Cancel")).toBeInTheDocument();
+    expect(screen.queryByText("Edit")).not.toBeInTheDocument();
+  });
+
+  it("calls saveRow and exits editing on Save", async () => {
+    const saveRowSpy = vi.fn();
+    useTableDataStore.setState({ saveRow: saveRowSpy });
+    render(<RowView />);
+
+    await userEvent.click(screen.getByText("Edit"));
+    const nameInput = screen.getByRole("textbox");
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "Bob Jones");
+    await userEvent.click(screen.getByText("Save"));
+
+    expect(saveRowSpy).toHaveBeenCalledOnce();
+    expect(saveRowSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Bob Jones" }),
+    );
+    expect(screen.queryAllByRole("textbox")).toHaveLength(0);
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+  });
+
+  it("passes checkbox values correctly on Save", async () => {
+    const saveRowSpy = vi.fn();
+    useTableDataStore.setState({ saveRow: saveRowSpy });
+    render(<RowView />);
+
+    await userEvent.click(screen.getByText("Edit"));
+    await userEvent.click(screen.getByRole("checkbox"));
+    await userEvent.click(screen.getByText("Save"));
+
+    expect(saveRowSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ isActive: false }),
+    );
   });
 
   it("calls closeRowView when the modal backdrop is clicked", async () => {

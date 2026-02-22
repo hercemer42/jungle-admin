@@ -27,7 +27,10 @@ const convertServerDatesToInputDates = (
   return rows.map((row) => {
     const convertedRow: Record<string, any> = { ...row };
     fields.forEach((field) => {
-      if (field.type === "datetime" && row[field.name]) {
+      if (
+        (field.type === "datetime" || field.type === "datetime-local") &&
+        row[field.name]
+      ) {
         const date = new Date(row[field.name]);
         convertedRow[field.name] = date.toISOString().slice(0, 16);
       }
