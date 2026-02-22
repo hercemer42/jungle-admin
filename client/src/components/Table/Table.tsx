@@ -22,9 +22,9 @@ function Table() {
         <thead>
           <tr>
             {tableProperties.map((property) => (
-              <th key={property} onClick={() => sort(property)}>
-                {property}
-                {property === sortColumn ? (sortDesc ? " ▼" : " ▲") : ""}
+              <th key={property.name} onClick={() => sort(property.name)}>
+                {property.name}
+                {property.name === sortColumn ? (sortDesc ? " ▼" : " ▲") : ""}
               </th>
             ))}
           </tr>
@@ -34,7 +34,7 @@ function Table() {
             paginatedRows.map((row) => (
               <tr key={String(row.id)} onClick={() => openRow(row)}>
                 {tableProperties.map((property) => (
-                  <td key={property}>{row[property]}</td>
+                  <td key={property.name}>{row[property.name] ?? ""}</td>
                 ))}
               </tr>
             ))

@@ -1,11 +1,17 @@
 import { create } from "zustand";
 import { fetchTable } from "../api/table.ts";
+import {
+  convertServerDatesToInputDates,
+  convertServerTypeToInputType,
+} from "../utils/utils.ts";
 
 type Row = Record<string, string | number | boolean | null | undefined>;
 
+type Field = { name: string; type: string };
+
 interface TableDataStore {
   rows: Row[];
-  tableProperties: (keyof Row)[];
+  tableProperties: Field[];
   filters: Partial<Record<keyof Row, string>>;
   setFilterProperty: (filterProperty: keyof Row, filterValue: string) => void;
   loadTableData: (tableName: string) => Promise<void>;
@@ -24,11 +30,17 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     })),
   loadTableData: async (tableName: string) => {
     const tableData = await fetchTable(tableName);
-    if (tableData && tableData.length > 0) {
+    if (!tableData) {
+      set({ tableProperties: [], rows: [] });
+      return;
+    }
+    if (tableData.fields && tableData.fields.length > 0) {
+      set({ tableProperties: convertServerTypeToInputType(tableData.fields) });
+    }
+    if (tableData.rows && tableData.rows.length > 0) {
       set({
-        tableProperties: Object.keys(tableData[0] || {}) as (keyof Row)[],
+        rows: convertServerDatesToInputDates(tableData.rows, tableData.fields),
       });
-      set({ rows: tableData });
     }
   },
   selectedRow: null,
@@ -43,4 +55,4 @@ const useTableDataStore = create<TableDataStore>((set) => ({
 }));
 
 export { useTableDataStore };
-export type { Row };
+export type { Row, Field };

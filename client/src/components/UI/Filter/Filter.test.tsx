@@ -1,15 +1,19 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useTableDataStore, type Row } from "../../../store/useTableDataStore";
+import { useTableDataStore, type Field } from "../../../store/useTableDataStore";
 import { render, screen } from "@testing-library/react";
 import { Filter } from "./Filter";
 import userEvent from "@testing-library/user-event";
 
-const tableProperties = ["id", "name", "totalSpent"];
+const tableProperties: Field[] = [
+  { name: "id", type: "number" },
+  { name: "name", type: "text" },
+  { name: "totalSpent", type: "number" },
+];
 
 beforeEach(() => {
   useTableDataStore.setState({
     filters: {},
-    tableProperties: [...tableProperties] as (keyof Row)[],
+    tableProperties,
   });
 });
 
@@ -24,7 +28,7 @@ describe("Filter", () => {
     for (const tableProperty of tableProperties) {
       await userEvent.selectOptions(
         screen.getByRole("combobox"),
-        tableProperty,
+        tableProperty.name,
       );
     }
 
@@ -48,7 +52,7 @@ describe("Filter", () => {
     for (const tableProperty of tableProperties) {
       await userEvent.selectOptions(
         screen.getByRole("combobox"),
-        tableProperty,
+        tableProperty.name,
       );
     }
 
@@ -61,7 +65,7 @@ describe("Filter", () => {
     const filters = useTableDataStore.getState().filters;
 
     for (const [index, tableProperty] of tableProperties.entries()) {
-      expect(filters[tableProperty]).toEqual(`text ${index}`);
+      expect(filters[tableProperty.name]).toEqual(`text ${index}`);
     }
   });
 });

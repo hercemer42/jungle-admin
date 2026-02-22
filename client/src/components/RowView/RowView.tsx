@@ -28,15 +28,23 @@ function RowView() {
         </div>
         <ul>
           {tableProperties.map((tableProperty) => (
-            <li key={tableProperty}>
-              <label>{tableProperty}</label>
+            <li key={tableProperty.name}>
+              <label>{tableProperty.name}</label>
               {editing ? (
                 <input
-                  defaultValue={String(selectedRow[tableProperty])}
+                  type={tableProperty.type}
+                  name={tableProperty.name}
+                  {...(tableProperty.type === "checkbox"
+                    ? { checked: Boolean(selectedRow[tableProperty.name]) }
+                    : {
+                        defaultValue: String(
+                          selectedRow[tableProperty.name] ?? "",
+                        ),
+                      })}
                 ></input>
               ) : (
                 <div className="property-value">
-                  {selectedRow[tableProperty]}
+                  {String(selectedRow[tableProperty.name] ?? "")}
                 </div>
               )}
             </li>

@@ -26,7 +26,7 @@ function Filter() {
         <select onChange={addFilter} defaultValue="">
           <option value="" disabled key="default"></option>
           {tableProperties.map((property) => (
-            <option key={property}>{property}</option>
+            <option key={property.name}>{property.name}</option>
           ))}
         </select>
       </label>

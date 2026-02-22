@@ -1,40 +1,209 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useTableDataStore } from "../../store/useTableDataStore";
+import { useTableDataStore, type Field } from "../../store/useTableDataStore";
+import { useTablesStore } from "../../store/useTablesStore";
 import { act, render, screen } from "@testing-library/react";
 import { Table } from "./Table";
 import userEvent from "@testing-library/user-event";
 
-const tableProperties = ["id", "name", "totalSpent"];
+const tableProperties: Field[] = [
+  { name: "id", type: "number" },
+  { name: "name", type: "text" },
+  { name: "totalSpent", type: "number" },
+  { name: "isActive", type: "checkbox" },
+  { name: "dateOfBirth", type: "date" },
+  { name: "createdAt", type: "datetime-local" },
+];
 
 const rows = [
-  { id: "1", name: "Quinn Lewis", totalSpent: "25" },
-  { id: "2", name: "Eve Davis", totalSpent: "500" },
-  { id: "3", name: "Charlie Brown", totalSpent: "0" },
-  { id: "4", name: "Uma Allen", totalSpent: "100" },
-  { id: "5", name: "Alice Smith", totalSpent: "50" },
-  { id: "6", name: "Hank Taylor", totalSpent: "0" },
-  { id: "7", name: "Nina Rodriguez", totalSpent: "10" },
-  { id: "8", name: "Leo Martin", totalSpent: "5" },
-  { id: "9", name: "Sara Hall", totalSpent: "2" },
-  { id: "10", name: "Jack Thomas", totalSpent: "4" },
-  { id: "11", name: "Frank Miller", totalSpent: "0" },
-  { id: "12", name: "Victor King", totalSpent: "0" },
-  { id: "13", name: "Oscar Hernandez", totalSpent: "0" },
-  { id: "14", name: "Bob Johnson", totalSpent: "300" },
-  { id: "15", name: "Ivy Anderson", totalSpent: "0" },
-  { id: "16", name: "Tom Young", totalSpent: "0" },
-  { id: "17", name: "David Wilson", totalSpent: "0" },
-  { id: "18", name: "Pamela Clark", totalSpent: "200" },
-  { id: "19", name: "Karen Moore", totalSpent: "0" },
-  { id: "20", name: "Grace Lee", totalSpent: "0" },
-  { id: "21", name: "Wendy Wright", totalSpent: "0" },
-  { id: "22", name: "Mia Garcia", totalSpent: "0" },
-  { id: "23", name: "Ryan Walker", totalSpent: "0" },
+  {
+    id: 1,
+    name: "Quinn Lewis",
+    totalSpent: 25,
+    isActive: true,
+    dateOfBirth: "1990-01-15",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 2,
+    name: "Eve Davis",
+    totalSpent: 500,
+    isActive: false,
+    dateOfBirth: "1985-07-22",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 3,
+    name: "Charlie Brown",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1992-03-10",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 4,
+    name: "Uma Allen",
+    totalSpent: 100,
+    isActive: true,
+    dateOfBirth: "1988-11-28",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 5,
+    name: "Alice Smith",
+    totalSpent: 50,
+    isActive: false,
+    dateOfBirth: "1995-06-03",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 6,
+    name: "Hank Taylor",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1979-09-17",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 7,
+    name: "Nina Rodriguez",
+    totalSpent: 10,
+    isActive: true,
+    dateOfBirth: "1993-12-01",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 8,
+    name: "Leo Martin",
+    totalSpent: 5,
+    isActive: false,
+    dateOfBirth: "1982-04-25",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 9,
+    name: "Sara Hall",
+    totalSpent: 2,
+    isActive: true,
+    dateOfBirth: "1991-08-14",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 10,
+    name: "Jack Thomas",
+    totalSpent: 4,
+    isActive: true,
+    dateOfBirth: "1987-02-20",
+    createdAt: "2026-02-17T11:05",
+  },
+  {
+    id: 11,
+    name: "Frank Miller",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1994-05-12",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 12,
+    name: "Victor King",
+    totalSpent: 0,
+    isActive: false,
+    dateOfBirth: "1989-10-30",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 13,
+    name: "Oscar Hernandez",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1996-01-08",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 14,
+    name: "Bob Johnson",
+    totalSpent: 300,
+    isActive: true,
+    dateOfBirth: "1983-07-19",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 15,
+    name: "Ivy Anderson",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1990-11-05",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 16,
+    name: "Tom Young",
+    totalSpent: 0,
+    isActive: false,
+    dateOfBirth: "1997-03-22",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 17,
+    name: "David Wilson",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1986-09-14",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 18,
+    name: "Pamela Clark",
+    totalSpent: 200,
+    isActive: true,
+    dateOfBirth: "1992-12-27",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 19,
+    name: "Karen Moore",
+    totalSpent: 0,
+    isActive: false,
+    dateOfBirth: "1981-06-11",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 20,
+    name: "Grace Lee",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1994-08-03",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 21,
+    name: "Wendy Wright",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: null,
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 22,
+    name: "Mia Garcia",
+    totalSpent: 0,
+    isActive: false,
+    dateOfBirth: "1998-04-16",
+    createdAt: "2026-02-20T14:00",
+  },
+  {
+    id: 23,
+    name: "Ryan Walker",
+    totalSpent: 0,
+    isActive: true,
+    dateOfBirth: "1984-10-09",
+    createdAt: "2026-02-20T14:00",
+  },
 ];
 
 beforeEach(() => {
   useTableDataStore.setState({
-    tableProperties: ["id", "name", "totalSpent"],
+    tableProperties,
     selectedRow: null,
     rows: rows,
     filters: {},
@@ -44,14 +213,15 @@ beforeEach(() => {
 describe("Table", () => {
   it("renders the table headers", () => {
     render(<Table />);
-    expect(document.querySelectorAll("th")).toHaveLength(3);
+    expect(document.querySelectorAll("th")).toHaveLength(6);
     for (const property of tableProperties) {
-      expect(screen.getByText(property)).toBeInTheDocument();
+      expect(screen.getByText(property.name)).toBeInTheDocument();
     }
   });
 
   it("displays 'No results found' when there are no rows", () => {
     useTableDataStore.setState({ rows: [] });
+    useTablesStore.setState({ currentTable: "customers" });
     render(<Table />);
     expect(screen.getByText("No results found")).toBeInTheDocument();
   });
@@ -65,7 +235,7 @@ describe("Table", () => {
     render(<Table />);
     const current_rows = document.querySelectorAll("tbody tr");
     for (const row of current_rows) {
-      expect(row.querySelectorAll("td")).toHaveLength(3);
+      expect(row.querySelectorAll("td")).toHaveLength(6);
     }
   });
 
@@ -74,6 +244,8 @@ describe("Table", () => {
     expect(screen.getByText("Quinn Lewis")).toBeInTheDocument();
     expect(screen.getByText("25")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("1990-01-15")).toBeInTheDocument();
+    expect(screen.getAllByText("2026-02-17T11:05").length).toBeGreaterThan(0);
   });
 
   it("renders pagination controls when there are rows", () => {
@@ -138,9 +310,12 @@ describe("Table", () => {
     await userEvent.click(screen.getByText("Quinn Lewis"));
     const selectedRow = useTableDataStore.getState().selectedRow;
     expect(selectedRow).toEqual({
-      id: "1",
+      id: 1,
       name: "Quinn Lewis",
-      totalSpent: "25",
+      totalSpent: 25,
+      isActive: true,
+      dateOfBirth: "1990-01-15",
+      createdAt: "2026-02-17T11:05",
     });
   });
 
