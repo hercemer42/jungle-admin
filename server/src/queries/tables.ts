@@ -1,4 +1,5 @@
 import { pool } from "../db";
+import { getDataFromPostgresField } from "../utils/utils";
 
 let cachedTableNames: string[] | null = null;
 
@@ -53,7 +54,12 @@ const getTableData = async (tableName: string) => {
           500,
         );
       });
-    return entries.rows;
+    return {
+      fields: entries.fields.map((field: any) =>
+        getDataFromPostgresField(field),
+      ),
+      rows: entries.rows,
+    };
   } else {
     throw new QueryError(`Table "${tableName}" does not exist`, 404);
   }

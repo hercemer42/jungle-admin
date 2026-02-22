@@ -45,12 +45,22 @@ describe("GET /api/tables", () => {
   });
 
   it("should return table details for a valid table name", async () => {
-    const res = await request(app).get("/api/tables/categories");
+    const res = await request(app).get("/api/tables/customers");
     expect(res.statusCode).toEqual(200);
-    expect(Array.isArray(res.body)).toBeTruthy();
-    expect(res.body.length).toBeGreaterThan(0);
-    expect(res.body[0]).toHaveProperty("id");
-    expect(res.body[0]).toHaveProperty("name");
+    expect(Array.isArray(res.body.rows)).toBeTruthy();
+    expect(res.body.rows.length).toBeGreaterThan(0);
+    const row = res.body.rows[0];
+    expect(row).toHaveProperty("id");
+    expect(row).toHaveProperty("first_name");
+    expect(row.id).toBeGreaterThan(0);
+    expect(row.first_name).toBeTruthy();
+    expect(res.body.fields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "id", type: "number" }),
+        expect.objectContaining({ name: "first_name", type: "string" }),
+        expect.objectContaining({ name: "created_at", type: "datetime" }),
+      ]),
+    );
   });
 
   it("should return an error for an invalid table name", async () => {
