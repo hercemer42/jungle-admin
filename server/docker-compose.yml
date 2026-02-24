@@ -25,7 +25,7 @@ services:
       DB_PORT: 5432
       DB_USER: admin
       DB_PASSWORD: password
-      DB_NAME: forest_dev
+      DB_NAME: admin_panel_dev
     volumes:
       - ./src:/app/src
       - ./tsconfig.json:/app/tsconfig.json

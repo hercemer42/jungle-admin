@@ -17,13 +17,19 @@ const oidToType: Record<number, string> = {
 function getDataFromPostgresField(
   field: any,
   nonEditableColumns: Set<string>,
+  primaryKeyColumns: Set<string>,
 ) {
   const type = oidToType[field.dataTypeID] || "string";
   return {
     type,
     name: field.name,
     editable: type !== "datetime" && !nonEditableColumns.has(field.name),
+    primaryKey: primaryKeyColumns.has(field.name),
   };
 }
 
-export { getDataFromPostgresField };
+function validateParameter(columnName: string): boolean {
+  return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName);
+}
+
+export { getDataFromPostgresField, validateParameter };
