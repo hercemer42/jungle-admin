@@ -1,3 +1,5 @@
+import type { ColumnFilters } from "../types/types";
+
 export async function fetchTables() {
   const response = await fetch("/api/tables");
   if (!response.ok) {
@@ -7,8 +9,27 @@ export async function fetchTables() {
   return data.tableNames;
 }
 
-export async function fetchTable(name: string) {
-  const response = await fetch(`/api/tables/${name}`);
+export async function fetchTable(
+  name: string,
+  page: number,
+  columnFilters: ColumnFilters,
+  sortColumn: string | null,
+  sortDirection: "asc" | "desc" | null,
+) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", page.toString());
+  if (sortColumn) {
+    queryParams.append("sortColumn", sortColumn);
+  }
+  if (sortDirection) {
+    queryParams.append("sortDirection", sortDirection);
+  }
+  for (const [key, value] of Object.entries(columnFilters)) {
+    if (value) {
+      queryParams.append(`columnFilters[${key}]`, value);
+    }
+  }
+  const response = await fetch(`/api/tables/${name}?${queryParams.toString()}`);
   if (!response.ok) {
     throw new Error("Failed to fetch table");
   }

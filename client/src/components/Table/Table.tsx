@@ -1,20 +1,19 @@
-import { useTable } from "./useTable";
 import "./Table.css";
+import { useTablesStore } from "../../store/useTablesStore";
+import { useTableDataStore } from "../../store/useTableDataStore";
 
 function Table() {
-  const {
-    tableProperties,
-    paginatedRows,
-    sort,
-    sortColumn,
-    sortDesc,
-    page,
-    nextPage,
-    previousPage,
-    pageCount,
-    openRow,
-    currentTable,
-  } = useTable();
+  const rows = useTableDataStore((state) => state.rows);
+  const tableProperties = useTableDataStore((state) => state.tableProperties);
+  const currentTable = useTablesStore((state) => state.currentTable);
+  const openRowView = useTableDataStore((state) => state.openRowView);
+  const sortColumn = useTableDataStore((state) => state.sortColumn);
+  const setSortColumn = useTableDataStore((state) => state.setSortColumn);
+  const sortDirection = useTableDataStore((state) => state.sortDirection);
+  const page = useTableDataStore((state) => state.page);
+  const setNextPage = useTableDataStore((state) => state.setNextPage);
+  const setPreviousPage = useTableDataStore((state) => state.setPreviousPage);
+  const pageCount = useTableDataStore((state) => state.pageCount);
 
   return (
     <div>
@@ -22,17 +21,24 @@ function Table() {
         <thead>
           <tr>
             {tableProperties.map((property) => (
-              <th key={property.name} onClick={() => sort(property.name)}>
+              <th
+                key={property.name}
+                onClick={() => setSortColumn(property.name)}
+              >
                 {property.name}
-                {property.name === sortColumn ? (sortDesc ? " ▼" : " ▲") : ""}
+                {property.name === sortColumn
+                  ? sortDirection === "desc"
+                    ? " ▼"
+                    : " ▲"
+                  : ""}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {paginatedRows.length > 0 ? (
-            paginatedRows.map((row) => (
-              <tr key={String(row.id)} onClick={() => openRow(row)}>
+          {rows.length > 0 ? (
+            rows.map((row) => (
+              <tr key={String(row.id)} onClick={() => openRowView(row)}>
                 {tableProperties.map((property) => (
                   <td key={property.name}>{row[property.name] ?? ""}</td>
                 ))}
@@ -50,10 +56,10 @@ function Table() {
           <span>
             Page {page} of {pageCount}
           </span>
-          <button onClick={nextPage} disabled={page >= pageCount}>
+          <button onClick={() => setNextPage()} disabled={page >= pageCount}>
             Next
           </button>
-          <button onClick={previousPage} disabled={page === 1}>
+          <button onClick={() => setPreviousPage()} disabled={page === 1}>
             Previous
           </button>
         </div>

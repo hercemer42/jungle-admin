@@ -1,4 +1,4 @@
-import type { Field } from "../store/useTableDataStore";
+import type { ColumnFilters, Field } from "../types/types";
 
 const convertServerTypeToInputType = (serverTypes: Field[]): Field[] => {
   return serverTypes.map((field) => ({
@@ -43,4 +43,27 @@ const convertServerDatesToInputDates = (
   });
 };
 
-export { convertServerTypeToInputType, convertServerDatesToInputDates };
+const removeEmptyFilters = (filters: ColumnFilters) => {
+  const cleanedFilters: ColumnFilters = {};
+  for (const key in filters) {
+    if (filters[key]) {
+      cleanedFilters[key] = filters[key];
+    }
+  }
+  return cleanedFilters;
+};
+
+const debounce = (func: Function, delay: number) => {
+  let timer: any;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+};
+
+export {
+  convertServerTypeToInputType,
+  convertServerDatesToInputDates,
+  removeEmptyFilters,
+  debounce,
+};

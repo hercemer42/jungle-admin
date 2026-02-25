@@ -5,35 +5,58 @@ import { saveRow } from "../api/tables.ts";
 import {
   convertServerDatesToInputDates,
   convertServerTypeToInputType,
+  removeEmptyFilters,
 } from "../utils/utils.ts";
 import { useTablesStore } from "./useTablesStore.ts";
-
-type Row = Record<string, string | number | boolean | null | undefined>;
-
-type Field = { name: string; type: string; editable: boolean };
+import type {
+  Row,
+  Field,
+  ColumnFilters,
+  SortColumn,
+  SortDirection,
+  ColumnFilterProperty,
+} from "../types/types.tsx";
 
 interface TableDataStore {
   rows: Row[];
   tableProperties: Field[];
-  filters: Partial<Record<keyof Row, string>>;
-  setFilterProperty: (filterProperty: keyof Row, filterValue: string) => void;
+  columnFilters: ColumnFilters;
+  setFilterProperty: (
+    filterProperty: ColumnFilterProperty,
+    filterValue: string,
+  ) => void;
   loadTableData: (tableName: string) => Promise<void>;
   selectedRow: Row | null;
   openRowView: (row: Row) => void;
   closeRowView: () => void;
   saveRow: (updatedRow: Row) => void;
+  sortColumn: SortColumn;
+  setSortColumn: (column: SortColumn) => void;
+  sortDirection: SortDirection;
+  setSortDirection: (direction: SortDirection) => void;
+  page: number;
+  setNextPage: () => void;
+  setPreviousPage: () => void;
+  pageCount: number;
 }
 
 const useTableDataStore = create<TableDataStore>((set) => ({
   rows: [],
   tableProperties: [],
-  filters: {},
+  columnFilters: {},
   setFilterProperty: (filterProperty, filterValue) =>
     set((state) => ({
-      filters: { ...state.filters, [filterProperty]: filterValue },
+      columnFilters: { ...state.columnFilters, [filterProperty]: filterValue },
     })),
   loadTableData: async (tableName: string) => {
-    const tableData = await fetchTable(tableName);
+    const state = useTableDataStore.getState();
+    const tableData = await fetchTable(
+      tableName,
+      state.page,
+      state.columnFilters,
+      state.sortColumn,
+      state.sortDirection,
+    );
     if (!tableData) {
       set({ tableProperties: [], rows: [] });
       return;
@@ -41,10 +64,16 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     if (tableData.fields && tableData.fields.length > 0) {
       set({ tableProperties: convertServerTypeToInputType(tableData.fields) });
     }
-    if (tableData.rows && tableData.rows.length > 0) {
+    if (tableData.rows) {
       set({
         rows: convertServerDatesToInputDates(tableData.rows, tableData.fields),
       });
+    }
+    if (tableData.pageCount !== undefined) {
+      set({ pageCount: tableData.pageCount });
+    }
+    if (tableData.page !== undefined) {
+      set({ page: tableData.page });
     }
   },
   selectedRow: null,
@@ -79,7 +108,62 @@ const useTableDataStore = create<TableDataStore>((set) => ({
       };
     });
   },
+  sortColumn: null,
+  setSortColumn: (column) => {
+    set((state) => {
+      if (state.sortColumn !== column) {
+        return { sortColumn: column, sortDirection: "asc" };
+      }
+
+      switch (state.sortDirection) {
+        case "asc":
+          return { sortColumn: column, sortDirection: "desc" };
+        case "desc":
+          return { sortColumn: null, sortDirection: null };
+        case null:
+          return { sortColumn: column, sortDirection: "asc" };
+      }
+    });
+  },
+  sortDirection: "asc",
+  setSortDirection: (direction) =>
+    set(() => ({
+      sortDirection: direction,
+    })),
+  page: 1,
+  setNextPage: () =>
+    set((state) => ({
+      page: state.page + 1,
+    })),
+  setPreviousPage: () =>
+    set((state) => ({
+      page: state.page - 1,
+    })),
+  pageCount: 0,
 }));
 
+useTableDataStore.subscribe((state, prevState) => {
+  const sortChange =
+    state.sortColumn !== prevState.sortColumn ||
+    state.sortDirection !== prevState.sortDirection;
+  const filterChange =
+    JSON.stringify(removeEmptyFilters(state.columnFilters)) !==
+    JSON.stringify(removeEmptyFilters(prevState.columnFilters));
+  const pageChange = state.page !== prevState.page;
+
+  if (sortChange || filterChange) {
+    if (state.page !== 1) {
+      useTableDataStore.setState({ page: 1 }); // table data will be loaded when page change is detected
+      return;
+    }
+  }
+
+  if (sortChange || filterChange || pageChange) {
+    const currentTable = useTablesStore.getState().currentTable;
+    if (currentTable) {
+      useTableDataStore.getState().loadTableData(currentTable);
+    }
+  }
+});
+
 export { useTableDataStore };
-export type { Row, Field };

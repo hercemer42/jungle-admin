@@ -1,17 +1,18 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useTableDataStore, type Field } from "../../store/useTableDataStore";
+import { useTableDataStore } from "../../store/useTableDataStore";
 import { useTablesStore } from "../../store/useTablesStore";
 import { act, render, screen } from "@testing-library/react";
 import { Table } from "./Table";
 import userEvent from "@testing-library/user-event";
+import type { Field } from "../../types/types";
 
 const tableProperties: Field[] = [
-  { name: "id", type: "number" },
-  { name: "name", type: "text" },
-  { name: "totalSpent", type: "number" },
-  { name: "isActive", type: "checkbox" },
-  { name: "dateOfBirth", type: "date" },
-  { name: "createdAt", type: "datetime-local" },
+  { name: "id", type: "number", editable: false },
+  { name: "name", type: "text", editable: true },
+  { name: "totalSpent", type: "number", editable: true },
+  { name: "isActive", type: "checkbox", editable: true },
+  { name: "dateOfBirth", type: "date", editable: true },
+  { name: "createdAt", type: "datetime-local", editable: false },
 ];
 
 const rows = [
@@ -95,118 +96,16 @@ const rows = [
     dateOfBirth: "1987-02-20",
     createdAt: "2026-02-17T11:05",
   },
-  {
-    id: 11,
-    name: "Frank Miller",
-    totalSpent: 0,
-    isActive: true,
-    dateOfBirth: "1994-05-12",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 12,
-    name: "Victor King",
-    totalSpent: 0,
-    isActive: false,
-    dateOfBirth: "1989-10-30",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 13,
-    name: "Oscar Hernandez",
-    totalSpent: 0,
-    isActive: true,
-    dateOfBirth: "1996-01-08",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 14,
-    name: "Bob Johnson",
-    totalSpent: 300,
-    isActive: true,
-    dateOfBirth: "1983-07-19",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 15,
-    name: "Ivy Anderson",
-    totalSpent: 0,
-    isActive: true,
-    dateOfBirth: "1990-11-05",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 16,
-    name: "Tom Young",
-    totalSpent: 0,
-    isActive: false,
-    dateOfBirth: "1997-03-22",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 17,
-    name: "David Wilson",
-    totalSpent: 0,
-    isActive: true,
-    dateOfBirth: "1986-09-14",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 18,
-    name: "Pamela Clark",
-    totalSpent: 200,
-    isActive: true,
-    dateOfBirth: "1992-12-27",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 19,
-    name: "Karen Moore",
-    totalSpent: 0,
-    isActive: false,
-    dateOfBirth: "1981-06-11",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 20,
-    name: "Grace Lee",
-    totalSpent: 0,
-    isActive: true,
-    dateOfBirth: "1994-08-03",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 21,
-    name: "Wendy Wright",
-    totalSpent: 0,
-    isActive: true,
-    dateOfBirth: null,
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 22,
-    name: "Mia Garcia",
-    totalSpent: 0,
-    isActive: false,
-    dateOfBirth: "1998-04-16",
-    createdAt: "2026-02-20T14:00",
-  },
-  {
-    id: 23,
-    name: "Ryan Walker",
-    totalSpent: 0,
-    isActive: true,
-    dateOfBirth: "1984-10-09",
-    createdAt: "2026-02-20T14:00",
-  },
 ];
 
 beforeEach(() => {
   useTableDataStore.setState({
     tableProperties,
     selectedRow: null,
+    sortColumn: null,
+    sortDirection: "asc",
     rows: rows,
-    filters: {},
+    columnFilters: {},
   });
 });
 
@@ -249,14 +148,16 @@ describe("Table", () => {
   });
 
   it("renders pagination controls when there are rows", () => {
+    useTableDataStore.setState({ page: 1, pageCount: 1 });
     render(<Table />);
-    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
     expect(screen.getByText("Next")).toBeInTheDocument();
     expect(screen.getByText("Previous")).toBeInTheDocument();
   });
 
   it("does not render pagination controls when there are no rows", () => {
     useTableDataStore.setState({ rows: [] });
+    useTableDataStore.setState({ page: 0, pageCount: 0 });
     render(<Table />);
     expect(screen.queryByText("Page 1 of 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Next")).not.toBeInTheDocument();
@@ -264,11 +165,13 @@ describe("Table", () => {
   });
 
   it("disables pagination buttons when on the first page", () => {
+    useTableDataStore.setState({ page: 1, pageCount: 2 });
     render(<Table />);
     expect(screen.getByText("Previous")).toBeDisabled();
   });
 
   it("disables pagination buttons when on the last page", async () => {
+    useTableDataStore.setState({ page: 2, pageCount: 2 });
     render(<Table />);
     await userEvent.click(screen.getByText("Next"));
     await userEvent.click(screen.getByText("Next"));
@@ -276,33 +179,17 @@ describe("Table", () => {
   });
 
   it("navigates to the next page when the Next button is clicked", async () => {
+    useTableDataStore.setState({ page: 1, pageCount: 2 });
     render(<Table />);
     await userEvent.click(screen.getByText("Next"));
-    expect(screen.getByText("Page 2 of 3")).toBeInTheDocument();
-    const current_rows = document.querySelectorAll("tbody tr");
-    expect(current_rows[0]).toHaveTextContent("Frank Miller");
-    expect(current_rows[1]).toHaveTextContent("Victor King");
-    expect(current_rows[2]).toHaveTextContent("Oscar Hernandez");
+    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
   });
 
   it("navigates to the previous page when the Previous button is clicked", async () => {
+    useTableDataStore.setState({ page: 2, pageCount: 2 });
     render(<Table />);
-    await userEvent.click(screen.getByText("Next"));
     await userEvent.click(screen.getByText("Previous"));
-    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
-    const current_rows = document.querySelectorAll("tbody tr");
-    expect(current_rows[0]).toHaveTextContent("Quinn Lewis");
-    expect(current_rows[1]).toHaveTextContent("Eve Davis");
-    expect(current_rows[2]).toHaveTextContent("Charlie Brown");
-  });
-
-  it("sorts the table when a header is clicked", async () => {
-    render(<Table />);
-    await userEvent.click(screen.getByText("name"));
-    const current_rows = document.querySelectorAll("tbody tr");
-    expect(current_rows[0]).toHaveTextContent("Wendy Wright");
-    expect(current_rows[1]).toHaveTextContent("Victor King");
-    expect(current_rows[2]).toHaveTextContent("Uma Allen");
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
   });
 
   it("opens a row when it is clicked", async () => {
@@ -319,87 +206,60 @@ describe("Table", () => {
     });
   });
 
-  it("toggles sort direction when the same header is clicked twice", async () => {
+  it("sets the sort indicator to asc when a column is clicked", async () => {
     render(<Table />);
     await userEvent.click(screen.getByText("name"));
-    await userEvent.click(screen.getByText("name ▼"));
-    const current_rows = document.querySelectorAll("tbody tr");
-    expect(current_rows[0]).toHaveTextContent("Alice Smith");
-    expect(current_rows[1]).toHaveTextContent("Bob Johnson");
-    expect(current_rows[2]).toHaveTextContent("Charlie Brown");
+    expect(screen.getByText("name ▲")).toBeInTheDocument();
   });
 
-  it("removes the sort when the same header is clicked three times", async () => {
+  it("sets the sort indicator to desc when a column is clicked twice", async () => {
     render(<Table />);
     await userEvent.click(screen.getByText("name"));
+    await userEvent.click(screen.getByText("name ▲"));
     expect(screen.getByText("name ▼")).toBeInTheDocument();
+  });
+
+  it("removes the sort indicator when the same header is clicked three times", async () => {
+    render(<Table />);
+    await userEvent.click(screen.getByText("name"));
+    await userEvent.click(screen.getByText("name ▲"));
     await userEvent.click(screen.getByText("name ▼"));
+    expect(screen.getByText("name")).toBeInTheDocument();
+  });
+
+  it("it changes sort indicator to ▲ when a different header is clicked", async () => {
+    render(<Table />);
+    await userEvent.click(screen.getByText("name"));
     expect(screen.getByText("name ▲")).toBeInTheDocument();
     await userEvent.click(screen.getByText("name ▲"));
-    expect(screen.getByText("name")).toBeInTheDocument();
-    const current_rows = document.querySelectorAll("tbody tr");
-    expect(current_rows[0]).toHaveTextContent("Quinn Lewis");
-    expect(current_rows[1]).toHaveTextContent("Eve Davis");
-    expect(current_rows[2]).toHaveTextContent("Charlie Brown");
-  });
-
-  it("it changes sort direction to ▼ when a different header is clicked", async () => {
-    render(<Table />);
-    await userEvent.click(screen.getByText("name"));
     expect(screen.getByText("name ▼")).toBeInTheDocument();
-    await userEvent.click(screen.getByText("name ▼"));
-    expect(screen.getByText("name ▲")).toBeInTheDocument();
     await userEvent.click(screen.getByText("totalSpent"));
-    expect(screen.getByText("totalSpent ▼")).toBeInTheDocument();
+    expect(screen.getByText("totalSpent ▲")).toBeInTheDocument();
   });
 
   it("resets to the first page when a header is clicked", async () => {
+    useTableDataStore.setState({ page: 3, pageCount: 3 });
     render(<Table />);
-    await userEvent.click(screen.getByText("Next"));
-    await userEvent.click(screen.getByText("Next"));
     expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
     await userEvent.click(screen.getByText("name"));
     expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
   });
 
-  it("maintains the sort order when navigating pages", async () => {
+  it("resets to the first page when columnFilters are applied", async () => {
+    useTableDataStore.setState({ page: 3, pageCount: 3 });
     render(<Table />);
-    await userEvent.click(screen.getByText("name"));
-    await userEvent.click(screen.getByText("Next"));
-    const current_rows = document.querySelectorAll("tbody tr");
-    expect(current_rows[0]).toHaveTextContent("Mia Garcia");
-    expect(current_rows[1]).toHaveTextContent("Leo Martin");
-    expect(current_rows[2]).toHaveTextContent("Karen Moore");
-  });
-
-  it("maintains the sort order when opening a row", async () => {
-    render(<Table />);
-    await userEvent.click(screen.getByText("name"));
-    await userEvent.click(screen.getByText("Next"));
-    await userEvent.click(screen.getByText("Mia Garcia"));
-    const current_rows = document.querySelectorAll("tbody tr");
-    expect(current_rows[0]).toHaveTextContent("Mia Garcia");
-    expect(current_rows[1]).toHaveTextContent("Leo Martin");
-    expect(current_rows[2]).toHaveTextContent("Karen Moore");
-  });
-
-  it("resets to the first page when filters are applied", async () => {
-    render(<Table />);
-    await userEvent.click(screen.getByText("Next"));
-    await userEvent.click(screen.getByText("Next"));
     expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
-    act(() => useTableDataStore.setState({ filters: { name: "Alice" } }));
-    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
+    act(() => useTableDataStore.setState({ columnFilters: { name: "Alice" } }));
+    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
   });
 
-  it("resets to the first page when filters are cleared", async () => {
+  it("resets to the first page when columnFilters are cleared", async () => {
+    useTableDataStore.setState({ page: 3, pageCount: 3 });
     render(<Table />);
-    await userEvent.click(screen.getByText("Next"));
-    await userEvent.click(screen.getByText("Next"));
     expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
-    act(() => useTableDataStore.setState({ filters: { name: "Alice" } }));
-    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
-    act(() => useTableDataStore.setState({ filters: { name: "" } }));
+    act(() => useTableDataStore.setState({ columnFilters: { name: "Alice" } }));
+    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    act(() => useTableDataStore.setState({ columnFilters: { name: "" } }));
     expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
   });
 });

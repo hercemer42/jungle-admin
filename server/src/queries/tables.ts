@@ -2,7 +2,7 @@ import { pool } from "../db";
 import { getDataFromPostgresField, validateParameter } from "../utils/utils";
 
 let cachedTableNames: string[] | null = null;
-type sortOrder = "asc" | "desc";
+type sortDirection = "asc" | "desc";
 
 class QueryError extends Error {
   constructor(
@@ -44,7 +44,7 @@ const getTableData = async (
   tableName: string,
   page: number,
   sortColumn?: string | undefined,
-  sortOrder?: sortOrder,
+  sortDirection?: sortDirection,
   columnFilters?: Record<string, any> | undefined,
 ) => {
   if (!cachedTableNames) {
@@ -78,7 +78,10 @@ const getTableData = async (
   if (columnFilters) {
     for (const col in columnFilters) {
       if (!validateParameter(col)) {
-        throw new QueryError(`Invalid column name in filters: "${col}"`, 400);
+        throw new QueryError(
+          `Invalid column name in columnFilters: "${col}"`,
+          400,
+        );
       }
     }
   }
@@ -93,9 +96,7 @@ const getTableData = async (
     filterColumns.length > 0
       ? "WHERE " +
         filterColumns
-          .map(
-            (col, index) => `${col}::text ILIKE '%' || $${index + 1} || '%'`,
-          )
+          .map((col, index) => `${col}::text ILIKE '%' || $${index + 1} || '%'`)
           .join(" AND ")
       : "";
 
@@ -114,7 +115,7 @@ const getTableData = async (
       ${whereClause}
       ${
         sortColumn
-          ? `ORDER BY ${sortColumn} ${sortOrder === "desc" ? "DESC" : "ASC"}`
+          ? `ORDER BY ${sortColumn} ${sortDirection === "desc" ? "DESC" : "ASC"}`
           : ""
       }
       LIMIT ${page_limit} OFFSET ${(page - 1) * page_limit}
@@ -132,10 +133,7 @@ const getTableData = async (
     ),
   ]).catch((err) => {
     console.error(err);
-    throw new QueryError(
-      `Failed to fetch data for table "${tableName}"`,
-      500,
-    );
+    throw new QueryError(`Failed to fetch data for table "${tableName}"`, 500);
   });
 
   const nonEditableColumns = new Set<string>(
@@ -154,14 +152,10 @@ const getTableData = async (
           field.name !== "total_count" && field.name !== "page_count",
       )
       .map((field: any) =>
-        getDataFromPostgresField(
-          field,
-          nonEditableColumns,
-          primaryKeyColumns,
-        ),
+        getDataFromPostgresField(field, nonEditableColumns, primaryKeyColumns),
       ),
     rows: entries.rows.map(({ total_count, page_count, ...row }: any) => row),
-    pageCount: entries.rows.length > 0 ? entries.rows[0].page_count : 1,
+    pageCount: entries.rows.length > 0 ? entries.rows[0].page_count : 0,
     totalCount: entries.rows.length > 0 ? entries.rows[0].total_count : 0,
   };
 };

@@ -35,7 +35,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("useTableDataStore.saveRow", () => {
+describe("row saving", () => {
   it("updates selectedRow and rows after saving", async () => {
     const updatedFromServer = { ...fakeRow, name: "Bob" };
     vi.mocked(tablesApi.saveRow).mockResolvedValue(updatedFromServer);
@@ -80,5 +80,116 @@ describe("useTableDataStore.saveRow", () => {
 
     const state = useTableDataStore.getState();
     expect(state.selectedRow?.createdAt).toBe("2026-02-17T11:05");
+  });
+});
+
+describe("column sorting", () => {
+  it("sets sort direction to 'asc' when sorting a new column", () => {
+    useTableDataStore.setState({ sortColumn: null, sortDirection: null });
+    useTableDataStore.getState().setSortColumn("name");
+    const state = useTableDataStore.getState();
+    expect(state.sortColumn).toBe("name");
+    expect(state.sortDirection).toBe("asc");
+  });
+
+  it("sets sort direction to 'desc' when clicking the same column again", () => {
+    useTableDataStore.setState({ sortColumn: "name", sortDirection: "asc" });
+    useTableDataStore.getState().setSortColumn("name");
+    const state = useTableDataStore.getState();
+    expect(state.sortColumn).toBe("name");
+    expect(state.sortDirection).toBe("desc");
+  });
+
+  it("removes sorting when clicking the same column a third time", () => {
+    useTableDataStore.setState({ sortColumn: "name", sortDirection: "desc" });
+    useTableDataStore.getState().setSortColumn("name");
+    const state = useTableDataStore.getState();
+    expect(state.sortColumn).toBe(null);
+    expect(state.sortDirection).toBe(null);
+  });
+
+  it("resets sort direction when switching to a different column", () => {
+    useTableDataStore.setState({ sortColumn: "name", sortDirection: "desc" });
+    useTableDataStore.getState().setSortColumn("totalSpent");
+    const state = useTableDataStore.getState();
+    expect(state.sortColumn).toBe("totalSpent");
+    expect(state.sortDirection).toBe("asc");
+  });
+});
+
+describe("table data loading", () => {
+  it("sets the page count and page when loading table data", async () => {
+    const tableData = {
+      fields: tableProperties,
+      rows: [fakeRow],
+      pageCount: 5,
+      page: 2,
+    };
+    vi.mocked(tablesApi.fetchTable).mockResolvedValue(tableData);
+
+    await useTableDataStore.getState().loadTableData("customers");
+
+    const state = useTableDataStore.getState();
+    expect(state.pageCount).toBe(5);
+    expect(state.page).toBe(2);
+  });
+
+  it("sets pageCount to 0 when server returns pageCount 0", async () => {
+    useTableDataStore.setState({ pageCount: 5 });
+    const tableData = {
+      fields: tableProperties,
+      rows: [],
+      pageCount: 0,
+      page: 1,
+    };
+    vi.mocked(tablesApi.fetchTable).mockResolvedValue(tableData);
+
+    await useTableDataStore.getState().loadTableData("customers");
+
+    const state = useTableDataStore.getState();
+    expect(state.pageCount).toBe(0);
+  });
+});
+
+describe("table data subscription", () => {
+  it("resets the page to 1 when column filters are applied", () => {
+    useTableDataStore.setState({ page: 3, pageCount: 5 });
+    useTableDataStore.setState({ columnFilters: { name: "Alice" } });
+
+    const state = useTableDataStore.getState();
+    expect(state.page).toBe(1);
+  });
+
+  it("resets the page to 1 when column filters are cleared", () => {
+    useTableDataStore.setState({
+      page: 3,
+      pageCount: 5,
+      columnFilters: { name: "Alice" },
+    });
+    useTableDataStore.setState({ columnFilters: {} });
+
+    const state = useTableDataStore.getState();
+    expect(state.page).toBe(1);
+  });
+
+  it("resets the page to 1 when sort column is changed", () => {
+    useTableDataStore.setState({ page: 3, pageCount: 5 });
+    useTableDataStore.getState().setSortColumn("name");
+
+    const state = useTableDataStore.getState();
+    expect(state.page).toBe(1);
+  });
+
+  it("resets the page to 1 when sort direction is changed", () => {
+    useTableDataStore.setState({
+      page: 3,
+      pageCount: 5,
+      sortColumn: "name",
+      sortDirection: "asc",
+    });
+    useTableDataStore.getState().setSortDirection("desc");
+
+    const state = useTableDataStore.getState();
+    expect(state.page).toBe(1);
   });
 });

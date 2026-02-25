@@ -1,12 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import {
-  useTableDataStore,
-  type Field,
-  type Row,
-} from "../../store/useTableDataStore";
+import { useTableDataStore } from "../../store/useTableDataStore";
 import { RowView } from "./RowView";
+import type { Row, Field } from "../../types/types";
 
 const fakeRow: Row = {
   id: 1,

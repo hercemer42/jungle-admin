@@ -116,10 +116,10 @@ describe("GET /api/tables", () => {
     expect(res.body.pageCount).toBeGreaterThan(0);
   });
 
-  it("should return the correct row count and page count when filters are applied", async () => {
+  it("should return the correct row count and page count when columnFilters are applied", async () => {
     const allRes = await request(app).get("/api/tables/customers");
     const filteredRes = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ is_active: true }))}`,
+      "/api/tables/customers?columnFilters[is_active]=true",
     );
     expect(filteredRes.statusCode).toEqual(200);
     expect(filteredRes.body).toHaveProperty("totalCount");
@@ -203,10 +203,10 @@ describe("GET /api/tables", () => {
 
   it("should sort and paginate results together correctly", async () => {
     const resPage1 = await request(app).get(
-      "/api/tables/orders?sortColumn=id&sortOrder=asc&page=1",
+      "/api/tables/orders?sortColumn=id&sortDirection=asc&page=1",
     );
     const resPage2 = await request(app).get(
-      "/api/tables/orders?sortColumn=id&sortOrder=asc&page=2",
+      "/api/tables/orders?sortColumn=id&sortDirection=asc&page=2",
     );
     expect(resPage1.statusCode).toEqual(200);
     expect(resPage2.statusCode).toEqual(200);
@@ -219,10 +219,10 @@ describe("GET /api/tables", () => {
 
   it("should filter and paginate results together correctly", async () => {
     const resPage1 = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ is_active: true }))}&page=1`,
+      "/api/tables/customers?columnFilters[is_active]=true&page=1",
     );
     const resPage2 = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ is_active: true }))}&page=2`,
+      "/api/tables/customers?columnFilters[is_active]=true&page=2",
     );
     expect(resPage1.statusCode).toEqual(200);
     expect(resPage2.statusCode).toEqual(200);
@@ -238,10 +238,10 @@ describe("GET /api/tables", () => {
 
   it("should filter, sort, and paginate results together correctly", async () => {
     const resPage1 = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ is_active: true }))}&sortColumn=id&sortOrder=asc&page=1`,
+      "/api/tables/customers?columnFilters[is_active]=true&sortColumn=id&sortDirection=asc&page=1",
     );
     const resPage2 = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ is_active: true }))}&sortColumn=id&sortOrder=asc&page=2`,
+      "/api/tables/customers?columnFilters[is_active]=true&sortColumn=id&sortDirection=asc&page=2",
     );
     expect(resPage1.statusCode).toEqual(200);
     expect(resPage2.statusCode).toEqual(200);
@@ -274,9 +274,9 @@ describe("GET /api/tables", () => {
     expect(res.body.error).toBe("Invalid sort column name");
   });
 
-  it("should return results sorted in ascending order when sortOrder=asc is specified", async () => {
+  it("should return results sorted in ascending order when sortDirection=asc is specified", async () => {
     const res = await request(app).get(
-      "/api/tables/orders?sortColumn=id&sortOrder=asc",
+      "/api/tables/orders?sortColumn=id&sortDirection=asc",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -287,9 +287,9 @@ describe("GET /api/tables", () => {
     }
   });
 
-  it("should return results sorted in descending order when sortOrder=desc is specified", async () => {
+  it("should return results sorted in descending order when sortDirection=desc is specified", async () => {
     const res = await request(app).get(
-      "/api/tables/orders?sortColumn=id&sortOrder=desc",
+      "/api/tables/orders?sortColumn=id&sortDirection=desc",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -309,17 +309,9 @@ describe("GET /api/tables", () => {
     }
   });
 
-  it("should return an error if the column filters parameter is not valid JSON", async () => {
-    const res = await request(app).get(
-      "/api/tables/orders?columnFilters=invalid_json",
-    );
-    expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toBe("Invalid column filters JSON");
-  });
-
   it("should filter results based on a single column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ first_name: "Alice" }))}`,
+      "/api/tables/customers?columnFilters[first_name]=Alice",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -329,7 +321,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on a boolean column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ is_active: true }))}`,
+      "/api/tables/customers?columnFilters[is_active]=true",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -339,7 +331,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on a date column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ date_of_birth: "1990-01-15" }))}`,
+      "/api/tables/customers?columnFilters[date_of_birth]=1990-01-15",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -349,7 +341,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on a datetime column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ created_at: "2026-02-17" }))}`,
+      "/api/tables/customers?columnFilters[created_at]=2026-02-17",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -359,7 +351,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on a partial string match when filtering with a string column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ first_name: "Ali" }))}`,
+      "/api/tables/customers?columnFilters[first_name]=Ali",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -369,7 +361,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on a partial match when filtering with a boolean column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ is_active: "tru" }))}`,
+      "/api/tables/customers?columnFilters[is_active]=tru",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -379,7 +371,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on a partial match when filtering with a date column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ date_of_birth: "1990-01" }))}`,
+      "/api/tables/customers?columnFilters[date_of_birth]=1990-01",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -389,7 +381,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on a partial match when filtering with a datetime column filter", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ created_at: "2026-02" }))}`,
+      "/api/tables/customers?columnFilters[created_at]=2026-02",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -399,7 +391,7 @@ describe("GET /api/tables", () => {
 
   it("should filter results based on multiple column filters", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ first_name: "Alice", is_active: true }))}`,
+      "/api/tables/customers?columnFilters[first_name]=Alice&columnFilters[is_active]=true",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -408,9 +400,9 @@ describe("GET /api/tables", () => {
     expect(res.body.rows[0].is_active).toBe(true);
   });
 
-  it("should return an empty array when no rows match the filters", async () => {
+  it("should return an empty array when no rows match the columnFilters", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ first_name: "NonExistentName" }))}`,
+      "/api/tables/customers?columnFilters[first_name]=NonExistentName",
     );
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body.rows)).toBeTruthy();
@@ -419,7 +411,7 @@ describe("GET /api/tables", () => {
 
   it("should return an error if the column filters contain an invalid column name", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ invalid_column: "value" }))}`,
+      "/api/tables/customers?columnFilters[invalid_column]=value",
     );
     expect(res.statusCode).toEqual(500);
     expect(res.body.error).toBe('Failed to fetch data for table "customers"');
@@ -427,11 +419,11 @@ describe("GET /api/tables", () => {
 
   it("should return an error if an sql injection attempt is made in the column filters", async () => {
     const res = await request(app).get(
-      `/api/tables/customers?columnFilters=${encodeURIComponent(JSON.stringify({ "first_name;DROP TABLE customers;--": "Alice" }))}`,
+      "/api/tables/customers?columnFilters[first_name;DROP TABLE customers;--]=Alice",
     );
     expect(res.statusCode).toEqual(400);
     expect(res.body.error).toBe(
-      'Invalid column name in filters: "first_name;DROP TABLE customers;--"',
+      'Invalid column name in columnFilters: "first_name;DROP TABLE customers;--"',
     );
   });
 
@@ -488,9 +480,7 @@ describe("GET /api/tables", () => {
       .put("/api/tables/customers/rows/1")
       .send({ first_name: "UpdatedName" });
     expect(res.statusCode).toEqual(500);
-    expect(res.body.error).toBe(
-      'Failed to save row in table "customers"',
-    );
+    expect(res.body.error).toBe('Failed to save row in table "customers"');
     pool.query = originalQuery;
   });
 

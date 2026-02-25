@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useTableDataStore, type Row } from "../../store/useTableDataStore";
+import { useTableDataStore } from "../../store/useTableDataStore";
+import type { Row } from "../../types/types";
 
 function useRowView() {
   const saveRow = useTableDataStore((state) => state.saveRow);

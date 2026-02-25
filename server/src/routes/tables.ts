@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getTableNames, getTableData, saveRow } from "../queries/tables.ts";
 
 const tablesRouter = Router();
+type ColumnFilters = Record<string, string>;
 
 tablesRouter.get("/", async (req, res) =>
   getTableNames()
@@ -17,17 +18,10 @@ tablesRouter.get("/:name", async (req, res) => {
   const sortColumn = req.query.sortColumn
     ? String(req.query.sortColumn)
     : undefined;
-  let columnFilters: Record<string, any> | undefined;
-  try {
-    if (req.query.columnFilters) {
-      columnFilters = JSON.parse(String(req.query.columnFilters));
-    }
-  } catch (err) {
-    res.status(400).json({ error: "Invalid column filters JSON" });
-    return;
-  }
-  const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
-  getTableData(req.params.name, page, sortColumn, sortOrder, columnFilters)
+  const sortDirection = req.query.sortDirection === "desc" ? "desc" : "asc";
+  const columnFilters = (req.query.columnFilters || {}) as ColumnFilters;
+
+  getTableData(req.params.name, page, sortColumn, sortDirection, columnFilters)
     .then((data) => res.json(data))
     .catch((err) => {
       console.error(err);

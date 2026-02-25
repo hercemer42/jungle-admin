@@ -1,19 +1,43 @@
-import {
-  useTableDataStore,
-  type Row,
-} from "../../../store/useTableDataStore.ts";
+import { useMemo } from "react";
+import { useTableDataStore } from "../../../store/useTableDataStore.ts";
+import type { ColumnFilterProperty } from "../../../types/types.tsx";
+import { debounce } from "../../../utils/utils.ts";
 import "./Filter.css";
+
+function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
+  const setFilterProperty = useTableDataStore(
+    (state) => state.setFilterProperty,
+  );
+
+  const processChange = useMemo(
+    () =>
+      debounce((filterName: ColumnFilterProperty, value: string) => {
+        setFilterProperty(filterName, value);
+      }, 300),
+    [],
+  );
+
+  return (
+    <label>
+      {filterName}
+      <input
+        onChange={(e) => processChange(filterName, e.target.value)}
+        name="FilterInput"
+      />
+    </label>
+  );
+}
 
 function Filter() {
   const setFilterProperty = useTableDataStore(
     (state) => state.setFilterProperty,
   );
-  const filters = useTableDataStore((state) => state.filters);
+  const columnFilters = useTableDataStore((state) => state.columnFilters);
   const tableProperties = useTableDataStore((state) => state.tableProperties);
 
   const addFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const filterName = e.target.value as keyof Row;
-    const filter = filters[filterName];
+    const filterName = e.target.value as ColumnFilterProperty;
+    const filter = columnFilters[filterName];
     if (!filter) {
       setFilterProperty(filterName, "");
     }
@@ -31,16 +55,8 @@ function Filter() {
         </select>
       </label>
 
-      {Object.entries(filters).map((filter) => (
-        <label key={filter[0]}>
-          {filter[0]} :{" "}
-          <input
-            onChange={(e) =>
-              setFilterProperty(filter[0] as keyof Row, e.target.value)
-            }
-            name="FilterInput"
-          />
-        </label>
+      {Object.entries(columnFilters).map(([filterName]) => (
+        <FilterInput key={filterName} filterName={filterName} />
       ))}
     </div>
   );
