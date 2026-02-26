@@ -22,4 +22,8 @@
   tbody tr:nth-child(even) {
     background: #f1f1f1;
   }
+
+  .date {
+    text-align: right;
+  }
 }

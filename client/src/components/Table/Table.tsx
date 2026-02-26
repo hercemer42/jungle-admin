@@ -1,6 +1,7 @@
 import "./Table.css";
 import { useTablesStore } from "../../store/useTablesStore";
 import { useTableDataStore } from "../../store/useTableDataStore";
+import { formatCellValue } from "../../utils/utils";
 
 function Table() {
   const rows = useTableDataStore((state) => state.rows);
@@ -46,8 +47,16 @@ function Table() {
                 onClick={() => openRowView(row)}
               >
                 {tableProperties.map((property) => (
-                  <td key={property.name}>
-                    {String(row[property.name] ?? "")}
+                  <td
+                    key={property.name}
+                    className={
+                      property.type === "datetime-local" ||
+                      property.type === "date"
+                        ? "date"
+                        : ""
+                    }
+                  >
+                    {formatCellValue(row[property.name], property.type)}
                   </td>
                 ))}
               </tr>

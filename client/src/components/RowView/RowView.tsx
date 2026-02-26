@@ -1,3 +1,4 @@
+import { formatCellValue } from "../../utils/utils";
 import { Modal } from "../UI/Modal/Modal";
 import "./RowView.css";
 import useRowView from "./useRowView";
@@ -65,7 +66,10 @@ function RowView() {
                   ></input>
                 ) : (
                   <div className="property-value">
-                    {String(selectedRow[tableProperty.name] ?? "")}
+                    {formatCellValue(
+                      selectedRow[tableProperty.name],
+                      tableProperty.type,
+                    )}
                   </div>
                 )}
               </li>

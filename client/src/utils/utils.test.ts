@@ -4,6 +4,7 @@ import {
   convertServerDatesToInputDates,
   removeEmptyFilters,
   debounce,
+  formatCellValue,
 } from "./utils";
 import type { Field } from "../types/types";
 
@@ -131,5 +132,38 @@ describe("debounce", () => {
     expect(fn).toHaveBeenCalledWith("second");
 
     vi.useRealTimers();
+  });
+});
+
+describe("formatCellValue", () => {
+  it("returns 'Yes' for truthy checkbox values", () => {
+    expect(formatCellValue(true, "checkbox")).toBe("Yes");
+    expect(formatCellValue(1, "checkbox")).toBe("Yes");
+  });
+
+  it("returns 'No' for falsy checkbox values", () => {
+    expect(formatCellValue(false, "checkbox")).toBe("No");
+    expect(formatCellValue(0, "checkbox")).toBe("No");
+    expect(formatCellValue(null, "checkbox")).toBe("No");
+  });
+
+  it("formats datetime-local values with toLocaleString", () => {
+    const result = formatCellValue("2026-02-17T11:05:00.000Z", "datetime-local");
+    expect(result).toBe(new Date("2026-02-17T11:05:00.000Z").toLocaleString());
+  });
+
+  it("formats date values with toLocaleDateString", () => {
+    const result = formatCellValue("1990-01-15", "date");
+    expect(result).toBe(new Date("1990-01-15").toLocaleDateString());
+  });
+
+  it("returns string for other types", () => {
+    expect(formatCellValue("Alice", "text")).toBe("Alice");
+    expect(formatCellValue(42, "number")).toBe("42");
+  });
+
+  it("returns empty string for null/undefined", () => {
+    expect(formatCellValue(null, "text")).toBe("");
+    expect(formatCellValue(undefined, "text")).toBe("");
   });
 });

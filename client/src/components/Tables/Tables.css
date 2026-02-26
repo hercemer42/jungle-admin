@@ -4,7 +4,7 @@
   padding-left: 20px;
   list-style: none;
   border: thin lightgray solid;
-  height: 100%;
+  height: calc(100% - 67px);
 
   li {
     padding: 10px;

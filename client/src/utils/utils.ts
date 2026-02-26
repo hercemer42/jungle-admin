@@ -55,9 +55,25 @@ const debounce = <T extends unknown[]>(
   };
 };
 
+const formatCellValue = (value: Row[string], type: string) => {
+  if (type === "checkbox") {
+    return value ? "Yes" : "No";
+  }
+  if (type === "datetime-local") {
+    const date = new Date(value as string);
+    return date.toLocaleString();
+  }
+  if (type === "date") {
+    const date = new Date(value as string);
+    return date.toLocaleDateString();
+  }
+  return String(value ?? "");
+};
+
 export {
   convertServerTypeToInputType,
   convertServerDatesToInputDates,
   removeEmptyFilters,
   debounce,
+  formatCellValue,
 };
