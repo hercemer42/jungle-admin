@@ -2,6 +2,7 @@ import "./Table.css";
 import { useTablesStore } from "../../store/useTablesStore";
 import { useTableDataStore } from "../../store/useTableDataStore";
 import { formatCellValue, formatTableAndColumnNames } from "../../utils/utils";
+import { Pagination } from "../Pagination/Pagination";
 
 function Table() {
   const rows = useTableDataStore((state) => state.rows);
@@ -11,10 +12,6 @@ function Table() {
   const sortColumn = useTableDataStore((state) => state.sortColumn);
   const setSortColumn = useTableDataStore((state) => state.setSortColumn);
   const sortDirection = useTableDataStore((state) => state.sortDirection);
-  const page = useTableDataStore((state) => state.page);
-  const setNextPage = useTableDataStore((state) => state.setNextPage);
-  const setPreviousPage = useTableDataStore((state) => state.setPreviousPage);
-  const pageCount = useTableDataStore((state) => state.pageCount);
   const primaryKeyColumns = useTableDataStore(
     (state) => state.primaryKeyColumns,
   );
@@ -68,19 +65,7 @@ function Table() {
           ) : null}
         </tbody>
       </table>
-      {pageCount > 0 && (
-        <div>
-          <span>
-            Page {page} of {pageCount}
-          </span>
-          <button onClick={() => setNextPage()} disabled={page >= pageCount}>
-            Next
-          </button>
-          <button onClick={() => setPreviousPage()} disabled={page === 1}>
-            Previous
-          </button>
-        </div>
-      )}
+      <Pagination />
     </div>
   );
 }

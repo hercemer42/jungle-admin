@@ -147,51 +147,6 @@ describe("Table", () => {
     expect(screen.getAllByText("2026-02-17T11:05").length).toBeGreaterThan(0);
   });
 
-  it("renders pagination controls when there are rows", () => {
-    useTableDataStore.setState({ page: 1, pageCount: 1 });
-    render(<Table />);
-    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
-    expect(screen.getByText("Next")).toBeInTheDocument();
-    expect(screen.getByText("Previous")).toBeInTheDocument();
-  });
-
-  it("does not render pagination controls when there are no rows", () => {
-    useTableDataStore.setState({ rows: [] });
-    useTableDataStore.setState({ page: 0, pageCount: 0 });
-    render(<Table />);
-    expect(screen.queryByText("Page 1 of 1")).not.toBeInTheDocument();
-    expect(screen.queryByText("Next")).not.toBeInTheDocument();
-    expect(screen.queryByText("Previous")).not.toBeInTheDocument();
-  });
-
-  it("disables pagination buttons when on the first page", () => {
-    useTableDataStore.setState({ page: 1, pageCount: 2 });
-    render(<Table />);
-    expect(screen.getByText("Previous")).toBeDisabled();
-  });
-
-  it("disables pagination buttons when on the last page", async () => {
-    useTableDataStore.setState({ page: 2, pageCount: 2 });
-    render(<Table />);
-    await userEvent.click(screen.getByText("Next"));
-    await userEvent.click(screen.getByText("Next"));
-    expect(screen.getByText("Next")).toBeDisabled();
-  });
-
-  it("navigates to the next page when the Next button is clicked", async () => {
-    useTableDataStore.setState({ page: 1, pageCount: 2 });
-    render(<Table />);
-    await userEvent.click(screen.getByText("Next"));
-    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
-  });
-
-  it("navigates to the previous page when the Previous button is clicked", async () => {
-    useTableDataStore.setState({ page: 2, pageCount: 2 });
-    render(<Table />);
-    await userEvent.click(screen.getByText("Previous"));
-    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
-  });
-
   it("opens a row when it is clicked", async () => {
     render(<Table />);
     await userEvent.click(screen.getByText("Quinn Lewis"));
