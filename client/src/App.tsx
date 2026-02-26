@@ -1,6 +1,6 @@
 import "./App.css";
 import { Table } from "./components/Table/Table.tsx";
-import { Filter } from "./components/UI/Filter/Filter.tsx";
+import { Filter } from "./components/Filter/Filter.tsx";
 import { RowView } from "./components/RowView/RowView.tsx";
 import { Toaster } from "./components/UI/Toast/Toast.tsx";
 import { Tables } from "./components/Tables/Tables.tsx";
