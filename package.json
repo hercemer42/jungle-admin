@@ -4,6 +4,9 @@
   "scripts": {
     "lint": "npm run lint --prefix client && npm run lint --prefix server",
     "lint:client": "npm run lint --prefix client",
-    "lint:server": "npm run lint --prefix server"
+    "lint:server": "npm run lint --prefix server",
+    "test": "npm run test --prefix client && npm run test --prefix server",
+    "test:client": "npm run test --prefix client",
+    "test:server": "npm run test --prefix server"
   }
 }
