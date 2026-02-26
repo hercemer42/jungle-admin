@@ -8,8 +8,13 @@ class QueryError extends Error {
   constructor(
     message: string,
     public status: number = 500,
+    err: Error | null = null,
   ) {
+    if (!err) {
+      err = new Error(message);
+    }
     super(message);
+    console.error(`QueryError: ${message} (status: ${status}) ${err}`);
   }
 }
 
@@ -32,8 +37,7 @@ const getTableNames = async () => {
   `,
     )
     .catch((err) => {
-      console.error(err);
-      throw new QueryError("Failed to fetch table names", 500);
+      throw new QueryError("Failed to fetch table names", 500, err);
     });
 
   cachedTableNames = entries.rows.map((row: any) => row.table_name);
@@ -132,8 +136,11 @@ const getTableData = async (
       [tableName],
     ),
   ]).catch((err) => {
-    console.error(err);
-    throw new QueryError(`Failed to fetch data for table "${tableName}"`, 500);
+    throw new QueryError(
+      `Failed to fetch data for table "${tableName}"`,
+      500,
+      err,
+    );
   });
 
   const nonEditableColumns = new Set<string>(
@@ -157,13 +164,14 @@ const getTableData = async (
     rows: entries.rows.map(({ total_count, page_count, ...row }: any) => row),
     pageCount: entries.rows.length > 0 ? entries.rows[0].page_count : 0,
     totalCount: entries.rows.length > 0 ? entries.rows[0].total_count : 0,
+    primaryKeyColumns: Array.from(primaryKeyColumns),
   };
 };
 
 const saveRow = async (
   tableName: string,
-  rowId: string,
   updatedRow: Record<string, any>,
+  primaryKeys: [string, string | number][],
 ) => {
   if (!cachedTableNames) {
     await getTableNames();
@@ -186,6 +194,12 @@ const saveRow = async (
     }
   }
 
+  for (const [key, value] of primaryKeys) {
+    if (!validateParameter(key)) {
+      throw new QueryError(`Invalid primary key column name: "${key}"`, 400);
+    }
+  }
+
   const setClauses = Object.keys(updatedRow)
     .map((key, index) => `${key} = $${index + 1}`)
     .join(", ");
@@ -194,18 +208,23 @@ const saveRow = async (
   const query = `
     UPDATE ${tableName}
     SET ${setClauses}
-    WHERE id = $${values.length + 1}
+    WHERE ${primaryKeys.map(([key], index) => `${key} = $${values.length + index + 1}`).join(" AND ")}
     RETURNING *
   `;
 
-  const result = await pool.query(query, [...values, rowId]).catch((err) => {
-    console.error(err);
-    throw new QueryError(`Failed to save row in table "${tableName}"`, 500);
-  });
+  const result = await pool
+    .query(query, [...values, ...primaryKeys.map(([, value]) => value)])
+    .catch((err) => {
+      throw new QueryError(
+        `Failed to save row in table "${tableName}"`,
+        500,
+        err,
+      );
+    });
 
   if (result.rows.length === 0) {
     throw new QueryError(
-      `Row with id "${rowId}" not found in table "${tableName}"`,
+      `Row with primary keys "${primaryKeys.map(([key, value]) => `${key}:${value}`).join(", ")}" not found in table "${tableName}"`,
       404,
     );
   }

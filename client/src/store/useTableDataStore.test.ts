@@ -30,6 +30,7 @@ beforeEach(() => {
     rows: [fakeRow],
     selectedRow: fakeRow,
     tableProperties,
+    primaryKeyColumns: ["id"],
   });
   useTablesStore.setState({ currentTable: "customers" });
   vi.clearAllMocks();
@@ -45,7 +46,7 @@ describe("row saving", () => {
     expect(tablesApi.saveRow).toHaveBeenCalledWith(
       "customers",
       { name: "Bob" },
-      1,
+      [["id", 1]],
     );
     const state = useTableDataStore.getState();
     expect(state.selectedRow).toMatchObject({ name: "Bob" });

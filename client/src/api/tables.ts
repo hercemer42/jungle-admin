@@ -40,16 +40,22 @@ export async function fetchTable(
 export async function saveRow(
   tableName: string,
   updatedRow: Record<string, any>,
-  id: number,
+  primaryKeys: [string, string | number][],
 ) {
-  console.log("saveRow called with", { tableName, updatedRow });
-  const response = await fetch(`/api/tables/${tableName}/rows/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(updatedRow),
+  const queryParams = new URLSearchParams();
+  primaryKeys.forEach(([key, value]) => {
+    queryParams.append(`primaryKeys[${key}]`, value.toString());
   });
+  const response = await fetch(
+    `/api/tables/${tableName}/rows/?${queryParams.toString()}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedRow),
+    },
+  );
   if (!response.ok) {
     throw new Error("Failed to save row");
   }

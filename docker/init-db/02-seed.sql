@@ -100,32 +100,11 @@ ALTER SEQUENCE public.customers_id_seq OWNED BY public.customers.id;
 --
 
 CREATE TABLE public.order_items (
-    id integer NOT NULL,
     order_id integer NOT NULL,
     product_id integer NOT NULL,
     quantity integer DEFAULT 1 NOT NULL,
     unit_price numeric(10,2) NOT NULL
 );
-
-
---
--- Name: order_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.order_items_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: order_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.order_items_id_seq OWNED BY public.order_items.id;
 
 
 --
@@ -250,14 +229,6 @@ ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.c
 
 ALTER TABLE ONLY public.customers ALTER COLUMN id SET DEFAULT nextval('public.customers_id_seq'::regclass);
 
-
---
--- Name: order_items id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.order_items ALTER COLUMN id SET DEFAULT nextval('public.order_items_id_seq'::regclass);
-
-
 --
 -- Name: orders id; Type: DEFAULT; Schema: public; Owner: -
 --
@@ -356,22 +327,22 @@ COPY public.customers (id, first_name, last_name, email, phone, address, city, c
 -- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.order_items (id, order_id, product_id, quantity, unit_price) FROM stdin;
-1	1	1	1	1999.00
-2	1	6	1	59.99
-3	2	9	1	449.00
-4	3	4	1	849.00
-5	4	1	1	1999.00
-6	5	7	1	289.00
-7	5	6	1	59.99
-8	6	3	1	799.00
-9	7	7	1	289.00
-10	8	2	1	1549.00
-11	9	10	2	34.99
-12	9	8	1	120.00
-13	10	5	1	999.00
-14	11	10	1	34.99
-15	12	6	1	59.99
+COPY public.order_items (order_id, product_id, quantity, unit_price) FROM stdin;
+1	1	1	1999.00
+1	6	1	59.99
+2	9	1	449.00
+3	4	1	849.00
+4	1	1	1999.00
+5	7	1	289.00
+5	6	1	59.99
+6	3	1	799.00
+7	7	1	289.00
+8	2	1	1549.00
+9	10	2	34.99
+9	8	1	120.00
+10	5	1	999.00
+11	10	1	34.99
+12	6	1	59.99
 \.
 
 
@@ -444,14 +415,6 @@ SELECT pg_catalog.setval('public.categories_id_seq', 7, true);
 
 SELECT pg_catalog.setval('public.customers_id_seq', 50, true);
 
-
---
--- Name: order_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.order_items_id_seq', 15, true);
-
-
 --
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -502,7 +465,7 @@ ALTER TABLE ONLY public.customers
 --
 
 ALTER TABLE ONLY public.order_items
-    ADD CONSTRAINT order_items_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT order_items_pkey PRIMARY KEY (order_id, product_id);
 
 
 --

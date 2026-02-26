@@ -38,6 +38,7 @@ interface TableDataStore {
   setNextPage: () => void;
   setPreviousPage: () => void;
   pageCount: number;
+  primaryKeyColumns: string[];
 }
 
 const useTableDataStore = create<TableDataStore>((set) => ({
@@ -75,6 +76,10 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     if (tableData.page !== undefined) {
       set({ page: tableData.page });
     }
+
+    if (tableData.primaryKeyColumns) {
+      set({ primaryKeyColumns: tableData.primaryKeyColumns });
+    }
   },
   selectedRow: null,
   openRowView: (row) =>
@@ -89,12 +94,15 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     const selectedRow = useTableDataStore.getState().selectedRow;
     if (!selectedRow) return;
     const currentTable = useTablesStore.getState().currentTable;
+    const primaryKeys = useTableDataStore
+      .getState()
+      .primaryKeyColumns.map((col) => [
+        col,
+        selectedRow[col] as string | number,
+      ]) as [string, string | number][];
+
     if (!currentTable) return;
-    const savedRow = await saveRow(
-      currentTable,
-      updatedRow,
-      selectedRow.id as number,
-    );
+    const savedRow = await saveRow(currentTable, updatedRow, primaryKeys);
     set((state) => {
       const convertedRow = convertServerDatesToInputDates(
         [savedRow],
@@ -103,7 +111,9 @@ const useTableDataStore = create<TableDataStore>((set) => ({
       return {
         selectedRow: convertedRow,
         rows: state.rows.map((row) =>
-          row.id === savedRow.id ? convertedRow : row,
+          state.primaryKeyColumns.every((col) => row[col] === savedRow[col])
+            ? convertedRow
+            : row,
         ),
       };
     });
@@ -140,6 +150,7 @@ const useTableDataStore = create<TableDataStore>((set) => ({
       page: state.page - 1,
     })),
   pageCount: 0,
+  primaryKeyColumns: [],
 }));
 
 useTableDataStore.subscribe((state, prevState) => {

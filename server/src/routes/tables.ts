@@ -29,28 +29,31 @@ tablesRouter.get("/:name", async (req, res) => {
     });
 });
 
-tablesRouter.put("/:name/rows/:id", async (req, res) => {
-  const { name, id } = req.params;
+tablesRouter.put("/:name/rows/", async (req, res) => {
+  const { name } = req.params;
   const updatedRow = req.body;
+  const primaryKeys = Object.entries(req.query.primaryKeys || {}) as [
+    string,
+    string | number,
+  ][];
 
   if (
     !updatedRow ||
     typeof updatedRow !== "object" ||
     Object.keys(updatedRow).length === 0
   ) {
-    res.status(400).json({ error: "Request body is required" });
-    return;
+    return res.status(400).json({ error: "Request body is required" });
   }
 
-  if (isNaN(Number(id))) {
-    res.status(400).json({ error: "Row ID must be a number" });
-    return;
+  if (primaryKeys.length === 0) {
+    return res
+      .status(400)
+      .json({ error: "At least one primary key is required" });
   }
 
-  saveRow(name, id, updatedRow)
+  saveRow(name, updatedRow, primaryKeys)
     .then((savedRow) => res.json(savedRow))
     .catch((err) => {
-      console.error(err);
       res.status(err.status || 500).json({ error: err.message });
     });
 });
