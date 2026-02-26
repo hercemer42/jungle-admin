@@ -1,4 +1,4 @@
-import { formatCellValue } from "../../utils/utils";
+import { formatCellValue, formatTableAndColumnNames } from "../../utils/utils";
 import { Modal } from "../UI/Modal/Modal";
 import "./RowView.css";
 import useRowView from "./useRowView";
@@ -47,7 +47,7 @@ function RowView() {
           <ul>
             {tableProperties.map((tableProperty) => (
               <li key={tableProperty.name}>
-                <label>{tableProperty.name}</label>
+                <label>{formatTableAndColumnNames(tableProperty.name)}</label>
                 {editing && tableProperty.editable ? (
                   <input
                     type={tableProperty.type}

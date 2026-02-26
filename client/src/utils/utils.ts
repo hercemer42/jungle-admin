@@ -70,10 +70,19 @@ const formatCellValue = (value: Row[string], type: string) => {
   return String(value ?? "");
 };
 
+const formatTableAndColumnNames = (name: string) => {
+  return name
+    .replace(/_/g, " ")
+    .replace(/([A-Z])/g, " $1")
+    .replace(/\b\w/g, (str) => str.toUpperCase())
+    .replace(/\bId\b/g, "ID");
+};
+
 export {
   convertServerTypeToInputType,
   convertServerDatesToInputDates,
   removeEmptyFilters,
   debounce,
   formatCellValue,
+  formatTableAndColumnNames,
 };

@@ -1,7 +1,7 @@
 import "./Table.css";
 import { useTablesStore } from "../../store/useTablesStore";
 import { useTableDataStore } from "../../store/useTableDataStore";
-import { formatCellValue } from "../../utils/utils";
+import { formatCellValue, formatTableAndColumnNames } from "../../utils/utils";
 
 function Table() {
   const rows = useTableDataStore((state) => state.rows);
@@ -29,7 +29,7 @@ function Table() {
                 key={property.name}
                 onClick={() => setSortColumn(property.name)}
               >
-                {property.name}
+                {formatTableAndColumnNames(property.name)}
                 {property.name === sortColumn
                   ? sortDirection === "desc"
                     ? " ▼"

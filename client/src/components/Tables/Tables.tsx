@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useTablesStore } from "../../store/useTablesStore";
 import "./Tables.css";
+import { formatTableAndColumnNames } from "../../utils/utils";
 
 function Tables() {
   const tables = useTablesStore((state) => state.tables);
@@ -14,13 +15,13 @@ function Tables() {
 
   return (
     <ul className="tables">
-      {tables.map((table) => (
+      {tables.map((tableName) => (
         <li
-          key={table}
-          className={`table-card ${selectedTable === table ? "selected" : ""}`}
-          onClick={() => setSelectedTable(table)}
+          key={tableName}
+          className={`table-card ${selectedTable === tableName ? "selected" : ""}`}
+          onClick={() => setSelectedTable(tableName)}
         >
-          {table}
+          {formatTableAndColumnNames(tableName)}
         </li>
       ))}
     </ul>
