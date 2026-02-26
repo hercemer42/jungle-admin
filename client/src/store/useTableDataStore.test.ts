@@ -32,7 +32,7 @@ beforeEach(() => {
     tableProperties,
     primaryKeyColumns: ["id"],
   });
-  useTablesStore.setState({ currentTable: "customers" });
+  useTablesStore.setState({ selectedTable: "customers" });
   vi.clearAllMocks();
 });
 
@@ -61,8 +61,8 @@ describe("row saving", () => {
     expect(tablesApi.saveRow).not.toHaveBeenCalled();
   });
 
-  it("does nothing when there is no currentTable", async () => {
-    useTablesStore.setState({ currentTable: null });
+  it("does nothing when there is no selectedTable", async () => {
+    useTablesStore.setState({ selectedTable: null });
 
     await useTableDataStore.getState().updateRow({ name: "Bob" });
 

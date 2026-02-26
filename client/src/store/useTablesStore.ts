@@ -4,20 +4,24 @@ import { useTableDataStore } from "./useTableDataStore";
 
 interface TablesState {
   tables: string[];
-  currentTable: string | null;
+  selectedTable: string | null;
   loadTables: () => Promise<void>;
   setSelectedTable: (tableName: string) => void;
 }
 
 const useTablesStore = create<TablesState>((set) => ({
   tables: [],
-  currentTable: null,
+  selectedTable: null,
   loadTables: async () => {
     const tables = await fetchTables();
-    set({ tables });
+    const firstTable = tables[0] || null;
+    set({ tables, selectedTable: firstTable });
+    if (firstTable) {
+      await useTableDataStore.getState().loadTableData(firstTable);
+    }
   },
   setSelectedTable: async (tableName: string) => {
-    set({ currentTable: tableName });
+    set({ selectedTable: tableName });
     await useTableDataStore.getState().loadTableData(tableName);
   },
 }));

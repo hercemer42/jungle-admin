@@ -5,7 +5,7 @@ import { useTableDataStore } from "../../store/useTableDataStore";
 function Table() {
   const rows = useTableDataStore((state) => state.rows);
   const tableProperties = useTableDataStore((state) => state.tableProperties);
-  const currentTable = useTablesStore((state) => state.currentTable);
+  const selectedTable = useTablesStore((state) => state.selectedTable);
   const openRowView = useTableDataStore((state) => state.openRowView);
   const sortColumn = useTableDataStore((state) => state.sortColumn);
   const setSortColumn = useTableDataStore((state) => state.setSortColumn);
@@ -52,7 +52,7 @@ function Table() {
                 ))}
               </tr>
             ))
-          ) : currentTable ? (
+          ) : selectedTable ? (
             <tr>
               <td colSpan={tableProperties.length}>No results found</td>
             </tr>

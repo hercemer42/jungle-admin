@@ -93,7 +93,7 @@ const useTableDataStore = create<TableDataStore>((set) => ({
   updateRow: async (updatedRow) => {
     const selectedRow = useTableDataStore.getState().selectedRow;
     if (!selectedRow) return;
-    const currentTable = useTablesStore.getState().currentTable;
+    const selectedTable = useTablesStore.getState().selectedTable;
     const primaryKeys = useTableDataStore
       .getState()
       .primaryKeyColumns.map((col) => [
@@ -101,8 +101,8 @@ const useTableDataStore = create<TableDataStore>((set) => ({
         selectedRow[col] as string | number,
       ]) as [string, string | number][];
 
-    if (!currentTable) return;
-    const savedRow = await saveRow(currentTable, updatedRow, primaryKeys);
+    if (!selectedTable) return;
+    const savedRow = await saveRow(selectedTable, updatedRow, primaryKeys);
     set((state) => {
       const convertedRow = convertServerDatesToInputDates(
         [savedRow],
@@ -170,9 +170,9 @@ useTableDataStore.subscribe((state, prevState) => {
     sortChange || filterChange || state.page !== prevState.page;
 
   if (shouldReload) {
-    const currentTable = useTablesStore.getState().currentTable;
-    if (currentTable) {
-      useTableDataStore.getState().loadTableData(currentTable);
+    const selectedTable = useTablesStore.getState().selectedTable;
+    if (selectedTable) {
+      useTableDataStore.getState().loadTableData(selectedTable);
     }
   }
 });

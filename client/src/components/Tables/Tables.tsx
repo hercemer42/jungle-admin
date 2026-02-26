@@ -5,7 +5,7 @@ import "./Tables.css";
 function Tables() {
   const tables = useTablesStore((state) => state.tables);
   const loadTables = useTablesStore((state) => state.loadTables);
-  const currentTable = useTablesStore((state) => state.currentTable);
+  const selectedTable = useTablesStore((state) => state.selectedTable);
   const setSelectedTable = useTablesStore((state) => state.setSelectedTable);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ function Tables() {
       {tables.map((table) => (
         <li
           key={table}
-          className={`table-card ${currentTable === table ? "selected" : ""}`}
+          className={`table-card ${selectedTable === table ? "selected" : ""}`}
           onClick={() => setSelectedTable(table)}
         >
           {table}

@@ -120,7 +120,7 @@ describe("Table", () => {
 
   it("displays 'No results found' when there are no rows", () => {
     useTableDataStore.setState({ rows: [] });
-    useTablesStore.setState({ currentTable: "customers" });
+    useTablesStore.setState({ selectedTable: "customers" });
     render(<Table />);
     expect(screen.getByText("No results found")).toBeInTheDocument();
   });
