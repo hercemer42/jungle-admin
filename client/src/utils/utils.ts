@@ -1,4 +1,4 @@
-import type { ColumnFilters, Field } from "../types/types";
+import type { ColumnFilters, Field, Row } from "../types/types";
 
 const convertServerTypeToInputType = (serverTypes: Field[]): Field[] => {
   return serverTypes.map((field) => ({
@@ -20,22 +20,19 @@ const convertServerTypeToInputType = (serverTypes: Field[]): Field[] => {
   }));
 };
 
-const convertServerDatesToInputDates = (
-  rows: Record<string, any>[],
-  fields: Field[],
-) => {
+const convertServerDatesToInputDates = (rows: Row[], fields: Field[]) => {
   return rows.map((row) => {
-    const convertedRow: Record<string, any> = { ...row };
+    const convertedRow: Row = { ...row };
     fields.forEach((field) => {
       if (
         (field.type === "datetime" || field.type === "datetime-local") &&
         row[field.name]
       ) {
-        const date = new Date(row[field.name]);
+        const date = new Date(row[field.name] as string);
         convertedRow[field.name] = date.toISOString().slice(0, 16);
       }
       if (field.type === "date" && row[field.name]) {
-        const date = new Date(row[field.name]);
+        const date = new Date(row[field.name] as string);
         convertedRow[field.name] = date.toISOString().slice(0, 10);
       }
     });
@@ -53,9 +50,9 @@ const removeEmptyFilters = (filters: ColumnFilters) => {
   return cleanedFilters;
 };
 
-const debounce = (func: Function, delay: number) => {
-  let timer: any;
-  return (...args: any[]) => {
+const debounce = <T extends unknown[]>(func: (...args: T) => void, delay: number) => {
+  let timer: ReturnType<typeof setTimeout>;
+  return (...args: T) => {
     clearTimeout(timer);
     timer = setTimeout(() => func(...args), delay);
   };

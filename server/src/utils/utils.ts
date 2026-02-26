@@ -14,8 +14,10 @@ const oidToType: Record<number, string> = {
   1184: "datetime", // timestamptz
 };
 
+import type { PgField } from "../types/types";
+
 function getDataFromPostgresField(
-  field: any,
+  field: PgField,
   nonEditableColumns: Set<string>,
   primaryKeyColumns: Set<string>,
 ) {

@@ -1,8 +1,8 @@
 import { pool } from "../db";
+import type { ConstraintRow, SortDirection } from "../types/types";
 import { getDataFromPostgresField, validateParameter } from "../utils/utils";
 
 let cachedTableNames: string[] | null = null;
-type sortDirection = "asc" | "desc";
 
 class QueryError extends Error {
   constructor(
@@ -40,7 +40,7 @@ const getTableNames = async () => {
       throw new QueryError("Failed to fetch table names", 500, err);
     });
 
-  cachedTableNames = entries.rows.map((row: any) => row.table_name);
+  cachedTableNames = entries.rows.map((row: { table_name: string }) => row.table_name);
   return cachedTableNames;
 };
 
@@ -48,8 +48,8 @@ const getTableData = async (
   tableName: string,
   page: number,
   sortColumn?: string | undefined,
-  sortDirection?: sortDirection,
-  columnFilters?: Record<string, any> | undefined,
+  sortDirection?: SortDirection,
+  columnFilters?: Record<string, string> | undefined,
 ) => {
   if (!cachedTableNames) {
     await getTableNames();
@@ -144,24 +144,24 @@ const getTableData = async (
   });
 
   const nonEditableColumns = new Set<string>(
-    constraints.rows.map((row: any) => row.column_name),
+    constraints.rows.map((row: ConstraintRow) => row.column_name),
   );
   const primaryKeyColumns = new Set<string>(
     constraints.rows
-      .filter((row: any) => row.constraint_type === "PRIMARY KEY")
-      .map((row: any) => row.column_name),
+      .filter((row: ConstraintRow) => row.constraint_type === "PRIMARY KEY")
+      .map((row: ConstraintRow) => row.column_name),
   );
 
   return {
     fields: entries.fields
       .filter(
-        (field: any) =>
+        (field) =>
           field.name !== "total_count" && field.name !== "page_count",
       )
-      .map((field: any) =>
+      .map((field) =>
         getDataFromPostgresField(field, nonEditableColumns, primaryKeyColumns),
       ),
-    rows: entries.rows.map(({ total_count, page_count, ...row }: any) => row),
+    rows: entries.rows.map(({ total_count: _total_count, page_count: _page_count, ...row }: Record<string, unknown>) => row),
     pageCount: entries.rows.length > 0 ? entries.rows[0].page_count : 0,
     totalCount: entries.rows.length > 0 ? entries.rows[0].total_count : 0,
     primaryKeyColumns: Array.from(primaryKeyColumns),
@@ -170,7 +170,7 @@ const getTableData = async (
 
 const saveRow = async (
   tableName: string,
-  updatedRow: Record<string, any>,
+  updatedRow: Record<string, unknown>,
   primaryKeys: [string, string | number][],
 ) => {
   if (!cachedTableNames) {
@@ -194,7 +194,7 @@ const saveRow = async (
     }
   }
 
-  for (const [key, value] of primaryKeys) {
+  for (const [key] of primaryKeys) {
     if (!validateParameter(key)) {
       throw new QueryError(`Invalid primary key column name: "${key}"`, 400);
     }

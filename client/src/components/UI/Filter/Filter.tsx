@@ -14,7 +14,7 @@ function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
       debounce((filterName: ColumnFilterProperty, value: string) => {
         setFilterProperty(filterName, value);
       }, 300),
-    [],
+    [setFilterProperty],
   );
 
   return (

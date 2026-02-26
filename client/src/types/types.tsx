@@ -1,4 +1,4 @@
-type Row = Record<string, string | number | boolean | null | undefined>;
+type Row = Record<string, string | number | boolean | Date | null | undefined>;
 type Field = { name: string; type: string; editable: boolean };
 type ColumnFilterProperty = keyof Row;
 type ColumnFilters = Partial<Record<ColumnFilterProperty, string>>;

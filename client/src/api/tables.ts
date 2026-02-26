@@ -1,4 +1,4 @@
-import type { ColumnFilters } from "../types/types";
+import type { ColumnFilters, Row } from "../types/types";
 
 export async function fetchTables() {
   const response = await fetch("/api/tables");
@@ -39,7 +39,7 @@ export async function fetchTable(
 
 export async function saveRow(
   tableName: string,
-  updatedRow: Record<string, any>,
+  updatedRow: Row,
   primaryKeys: [string, string | number][],
 ) {
   const queryParams = new URLSearchParams();

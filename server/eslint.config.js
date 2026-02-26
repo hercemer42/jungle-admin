@@ -12,5 +12,8 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.node,
     },
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
   },
 ])
