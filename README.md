@@ -11,8 +11,9 @@ A full-stack web application for browsing, filtering, sorting, and editing Postg
 
 ## Features
 
-- Auto-discovers all PostgreSQL tables
-- Column filtering (case-insensitive search)
+- Works with any PostgreSQL database (discovers tables in the `public` schema, supports basic column types)
+- Type-aware inputs (text, number, boolean, date) based on column type
+- Multiple column filtering (case-insensitive search)
 - Sortable columns (ascending/descending)
 - Pagination
 - Inline row editing via modal (respects column constraints)
@@ -21,17 +22,29 @@ A full-stack web application for browsing, filtering, sorting, and editing Postg
 
 ## Getting Started
 
-### Prerequisites
+### Option 1: Docker (recommended)
+
+Runs everything (database, server, client) with no additional setup:
+
+```sh
+docker compose up -d
+```
+
+The client runs at `http://localhost:5173` and proxies API requests to the server at `http://localhost:3000`.
+
+### Option 2: Manual
+
+#### Prerequisites
 
 - Node.js
-- Docker & Docker Compose (for database)
+- Docker & Docker Compose (for the database)
 
-### Setup
+#### Setup
 
 1. Start the database:
 
 ```sh
-docker compose up -d
+docker compose up -d postgres
 ```
 
 2. Install dependencies:
@@ -41,17 +54,17 @@ npm install --prefix client
 npm install --prefix server
 ```
 
-3. Configure environment variables:
-
-Create a `server/.env` file:
+3. Create a `server/.env` file pointing at your PostgreSQL database:
 
 ```
 DB_HOST=localhost
 DB_PORT=5433
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=postgres
+DB_USER=admin
+DB_PASSWORD=password
+DB_NAME=admin_panel_dev
 ```
+
+The values above connect to the bundled Docker database. Replace them to use your own PostgreSQL instance.
 
 4. Start the development servers:
 
@@ -67,12 +80,12 @@ The client runs at `http://localhost:5173` and proxies API requests to the serve
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run test` | Run all tests (client + server) |
-| `npm run test:client` | Run client tests |
-| `npm run test:server` | Run server tests |
-| `npm run lint` | Lint client and server |
+| Command               | Description                     |
+| --------------------- | ------------------------------- |
+| `npm run test`        | Run all tests (client + server) |
+| `npm run test:client` | Run client tests                |
+| `npm run test:server` | Run server tests                |
+| `npm run lint`        | Lint client and server          |
 
 ## Project Structure
 
@@ -96,8 +109,17 @@ The client runs at `http://localhost:5173` and proxies API requests to the serve
 
 ## API
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/tables` | List all database tables |
-| GET | `/api/tables/:name` | Fetch table data (supports filtering, sorting, pagination) |
-| PUT | `/api/tables/:name/rows/` | Update a row |
+| Method | Endpoint                  | Description                                                |
+| ------ | ------------------------- | ---------------------------------------------------------- |
+| GET    | `/api/tables`             | List all database tables                                   |
+| GET    | `/api/tables/:name`       | Fetch table data (supports filtering, sorting, pagination) |
+| PUT    | `/api/tables/:name/rows/` | Update a row                                               |
+
+## Roadmap
+
+- Row creation and deletion
+- Support for complex column types (JSON, arrays, enums)
+- Multi-schema support (beyond `public`)
+- Authentication and access control
+- Optimistic locking for concurrent edits
+- Error boundaries and loading states
