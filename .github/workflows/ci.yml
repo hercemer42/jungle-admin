@@ -4,22 +4,57 @@ on:
   push:
 
 jobs:
-  lint-and-test:
+  client:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package: [client, server]
-    name: ${{ matrix.package }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: ${{ matrix.package }}/package-lock.json
+          cache-dependency-path: client/package-lock.json
       - run: npm install
-        working-directory: ${{ matrix.package }}
+        working-directory: client
       - run: npm run lint
-        working-directory: ${{ matrix.package }}
+        working-directory: client
       - run: npm test -- --run
-        working-directory: ${{ matrix.package }}
+        working-directory: client
+
+  server:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Seed database
+        run: |
+          PGPASSWORD=password psql -h localhost -U admin -d postgres -c "CREATE DATABASE admin_panel_test;"
+          PGPASSWORD=password psql -h localhost -U admin -d admin_panel_test -f docker/init-db/02-seed.sql
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm install
+        working-directory: server
+      - run: npm run lint
+        working-directory: server
+      - run: npm test -- --run
+        working-directory: server
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USER: admin
+          DB_PASSWORD: password
+          DB_NAME: admin_panel_test
