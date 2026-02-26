@@ -193,6 +193,67 @@ describe("filter removal", () => {
   });
 });
 
+describe("table switching", () => {
+  it("resets filters when switching tables", async () => {
+    useTableDataStore.setState({
+      columnFilters: { name: "Alice" },
+    });
+    vi.mocked(tablesApi.fetchTable).mockResolvedValue({
+      fields: tableProperties,
+      rows: [],
+      pageCount: 0,
+      page: 1,
+      primaryKeyColumns: ["id"],
+    });
+
+    await useTablesStore.getState().setSelectedTable("orders");
+
+    const state = useTableDataStore.getState();
+    expect(state.columnFilters).toEqual({});
+  });
+
+  it("resets sort when switching tables", async () => {
+    useTableDataStore.setState({
+      sortColumn: "name",
+      sortDirection: "desc",
+    });
+    vi.mocked(tablesApi.fetchTable).mockResolvedValue({
+      fields: tableProperties,
+      rows: [],
+      pageCount: 0,
+      page: 1,
+      primaryKeyColumns: ["id"],
+    });
+
+    await useTablesStore.getState().setSelectedTable("orders");
+
+    const state = useTableDataStore.getState();
+    expect(state.sortColumn).toBe(null);
+    expect(state.sortDirection).toBe("asc");
+  });
+
+  it("resets page to 1 when switching tables", async () => {
+    useTableDataStore.setState({ page: 3, pageCount: 5 });
+    vi.mocked(tablesApi.fetchTable).mockResolvedValue({
+      fields: tableProperties,
+      rows: [],
+      pageCount: 0,
+      page: 1,
+      primaryKeyColumns: ["id"],
+    });
+
+    await useTablesStore.getState().setSelectedTable("orders");
+
+    expect(tablesApi.fetchTable).toHaveBeenCalledWith(
+      "orders",
+      1,
+      {},
+      null,
+      "asc",
+    );
+  });
+});
+
 describe("table data subscription", () => {
   it("resets the page to 1 when column filters are applied", () => {
     useTableDataStore.setState({ page: 3, pageCount: 5 });

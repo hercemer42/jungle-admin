@@ -22,6 +22,12 @@ const useTablesStore = create<TablesState>((set) => ({
   },
   setSelectedTable: async (tableName: string) => {
     set({ selectedTable: tableName });
+    useTableDataStore.setState({
+      columnFilters: {},
+      sortColumn: null,
+      sortDirection: "asc",
+      page: 1,
+    });
     await useTableDataStore.getState().loadTableData(tableName);
   },
 }));
