@@ -1,0 +1,9 @@
+{
+  "name": "admin-panel",
+  "private": true,
+  "scripts": {
+    "lint": "npm run lint --prefix client && npm run lint --prefix server",
+    "lint:client": "npm run lint --prefix client",
+    "lint:server": "npm run lint --prefix server"
+  }
+}
