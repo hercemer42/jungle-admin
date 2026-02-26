@@ -10,7 +10,7 @@ function Tables() {
 
   useEffect(() => {
     loadTables();
-  }, []);
+  }, [loadTables]);
 
   return (
     <ul className="tables">
