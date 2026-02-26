@@ -3,7 +3,7 @@ import { useTableDataStore } from "../../store/useTableDataStore";
 import type { Row } from "../../types/types";
 
 function useRowView() {
-  const saveRow = useTableDataStore((state) => state.saveRow);
+  const updateRow = useTableDataStore((state) => state.updateRow);
   const tableProperties = useTableDataStore((state) => state.tableProperties);
   const selectedRow = useTableDataStore((state) => state.selectedRow);
   const closeRowView = useTableDataStore((state) => state.closeRowView);
@@ -18,7 +18,7 @@ function useRowView() {
         updatedRow[prop.name] = formData.has(prop.name);
       }
     }
-    saveRow(updatedRow);
+    updateRow(updatedRow);
     setEditing(false);
   };
 

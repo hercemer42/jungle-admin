@@ -6,7 +6,6 @@ interface TablesState {
   tables: string[];
   currentTable: string | null;
   loadTables: () => Promise<void>;
-  selectTable: (tableName: string) => void;
   setSelectedTable: (tableName: string) => void;
 }
 
@@ -17,7 +16,6 @@ const useTablesStore = create<TablesState>((set) => ({
     const tables = await fetchTables();
     set({ tables });
   },
-  selectTable: (tableName: string) => set({ currentTable: tableName }),
   setSelectedTable: async (tableName: string) => {
     set({ currentTable: tableName });
     await useTableDataStore.getState().loadTableData(tableName);

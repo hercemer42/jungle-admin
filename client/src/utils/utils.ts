@@ -1,22 +1,16 @@
 import type { ColumnFilters, Field, Row } from "../types/types";
 
 const convertServerTypeToInputType = (serverTypes: Field[]): Field[] => {
+  const TYPE_MAP: Record<string, string> = {
+    boolean: "checkbox",
+    number: "number",
+    date: "date",
+    datetime: "datetime-local",
+  };
+
   return serverTypes.map((field) => ({
     ...field,
-    type: (() => {
-      switch (field.type) {
-        case "boolean":
-          return "checkbox";
-        case "number":
-          return "number";
-        case "date":
-          return "date";
-        case "datetime":
-          return "datetime-local";
-        default:
-          return "text";
-      }
-    })(),
+    type: TYPE_MAP[field.type] || "text",
   }));
 };
 
@@ -50,7 +44,10 @@ const removeEmptyFilters = (filters: ColumnFilters) => {
   return cleanedFilters;
 };
 
-const debounce = <T extends unknown[]>(func: (...args: T) => void, delay: number) => {
+const debounce = <T extends unknown[]>(
+  func: (...args: T) => void,
+  delay: number,
+) => {
   let timer: ReturnType<typeof setTimeout>;
   return (...args: T) => {
     clearTimeout(timer);

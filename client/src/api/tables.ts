@@ -29,7 +29,7 @@ export async function fetchTable(
       queryParams.append(`columnFilters[${key}]`, value);
     }
   }
-  const response = await fetch(`/api/tables/${name}?${queryParams.toString()}`);
+  const response = await fetch(`/api/tables/${name}?${queryParams}`);
   if (!response.ok) {
     throw new Error("Failed to fetch table");
   }
@@ -47,7 +47,7 @@ export async function saveRow(
     queryParams.append(`primaryKeys[${key}]`, value.toString());
   });
   const response = await fetch(
-    `/api/tables/${tableName}/rows/?${queryParams.toString()}`,
+    `/api/tables/${tableName}/rows/?${queryParams}`,
     {
       method: "PUT",
       headers: {

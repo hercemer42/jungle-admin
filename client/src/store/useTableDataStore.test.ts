@@ -41,7 +41,7 @@ describe("row saving", () => {
     const updatedFromServer = { ...fakeRow, name: "Bob" };
     vi.mocked(tablesApi.saveRow).mockResolvedValue(updatedFromServer);
 
-    await useTableDataStore.getState().saveRow({ name: "Bob" });
+    await useTableDataStore.getState().updateRow({ name: "Bob" });
 
     expect(tablesApi.saveRow).toHaveBeenCalledWith(
       "customers",
@@ -56,7 +56,7 @@ describe("row saving", () => {
   it("does nothing when there is no selectedRow", async () => {
     useTableDataStore.setState({ selectedRow: null });
 
-    await useTableDataStore.getState().saveRow({ name: "Bob" });
+    await useTableDataStore.getState().updateRow({ name: "Bob" });
 
     expect(tablesApi.saveRow).not.toHaveBeenCalled();
   });
@@ -64,7 +64,7 @@ describe("row saving", () => {
   it("does nothing when there is no currentTable", async () => {
     useTablesStore.setState({ currentTable: null });
 
-    await useTableDataStore.getState().saveRow({ name: "Bob" });
+    await useTableDataStore.getState().updateRow({ name: "Bob" });
 
     expect(tablesApi.saveRow).not.toHaveBeenCalled();
   });
@@ -77,7 +77,7 @@ describe("row saving", () => {
     };
     vi.mocked(tablesApi.saveRow).mockResolvedValue(updatedFromServer);
 
-    await useTableDataStore.getState().saveRow({ name: "Bob" });
+    await useTableDataStore.getState().updateRow({ name: "Bob" });
 
     const state = useTableDataStore.getState();
     expect(state.selectedRow?.createdAt).toBe("2026-02-17T11:05");

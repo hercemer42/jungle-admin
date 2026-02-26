@@ -101,9 +101,9 @@ describe("RowView", () => {
     expect(screen.queryByText("Edit")).not.toBeInTheDocument();
   });
 
-  it("calls saveRow and exits editing on Save", async () => {
-    const saveRowSpy = vi.fn();
-    useTableDataStore.setState({ saveRow: saveRowSpy });
+  it("calls updateRow and exits editing on Save", async () => {
+    const updateRowSpy = vi.fn();
+    useTableDataStore.setState({ updateRow: updateRowSpy });
     render(<RowView />);
 
     await userEvent.click(screen.getByText("Edit"));
@@ -112,8 +112,8 @@ describe("RowView", () => {
     await userEvent.type(nameInput, "Bob Jones");
     await userEvent.click(screen.getByText("Save"));
 
-    expect(saveRowSpy).toHaveBeenCalledOnce();
-    expect(saveRowSpy).toHaveBeenCalledWith(
+    expect(updateRowSpy).toHaveBeenCalledOnce();
+    expect(updateRowSpy).toHaveBeenCalledWith(
       expect.objectContaining({ name: "Bob Jones" }),
     );
     expect(screen.queryAllByRole("textbox")).toHaveLength(0);
@@ -121,15 +121,15 @@ describe("RowView", () => {
   });
 
   it("passes checkbox values correctly on Save", async () => {
-    const saveRowSpy = vi.fn();
-    useTableDataStore.setState({ saveRow: saveRowSpy });
+    const updateRowSpy = vi.fn();
+    useTableDataStore.setState({ updateRow: updateRowSpy });
     render(<RowView />);
 
     await userEvent.click(screen.getByText("Edit"));
     await userEvent.click(screen.getByRole("checkbox"));
     await userEvent.click(screen.getByText("Save"));
 
-    expect(saveRowSpy).toHaveBeenCalledWith(
+    expect(updateRowSpy).toHaveBeenCalledWith(
       expect.objectContaining({ isActive: false }),
     );
   });

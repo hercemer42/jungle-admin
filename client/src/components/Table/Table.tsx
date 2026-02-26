@@ -14,6 +14,9 @@ function Table() {
   const setNextPage = useTableDataStore((state) => state.setNextPage);
   const setPreviousPage = useTableDataStore((state) => state.setPreviousPage);
   const pageCount = useTableDataStore((state) => state.pageCount);
+  const primaryKeyColumns = useTableDataStore(
+    (state) => state.primaryKeyColumns,
+  );
 
   return (
     <div>
@@ -38,9 +41,14 @@ function Table() {
         <tbody>
           {rows.length > 0 ? (
             rows.map((row) => (
-              <tr key={String(row.id)} onClick={() => openRowView(row)}>
+              <tr
+                key={primaryKeyColumns.map((col) => row[col]).join("-")}
+                onClick={() => openRowView(row)}
+              >
                 {tableProperties.map((property) => (
-                  <td key={property.name}>{row[property.name] ?? ""}</td>
+                  <td key={property.name}>
+                    {String(row[property.name] ?? "")}
+                  </td>
                 ))}
               </tr>
             ))

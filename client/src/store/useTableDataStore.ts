@@ -29,7 +29,7 @@ interface TableDataStore {
   selectedRow: Row | null;
   openRowView: (row: Row) => void;
   closeRowView: () => void;
-  saveRow: (updatedRow: Row) => void;
+  updateRow: (updatedRow: Row) => void;
   sortColumn: SortColumn;
   setSortColumn: (column: SortColumn) => void;
   sortDirection: SortDirection;
@@ -90,7 +90,7 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     set(() => ({
       selectedRow: null,
     })),
-  saveRow: async (updatedRow) => {
+  updateRow: async (updatedRow) => {
     const selectedRow = useTableDataStore.getState().selectedRow;
     if (!selectedRow) return;
     const currentTable = useTablesStore.getState().currentTable;
@@ -160,16 +160,16 @@ useTableDataStore.subscribe((state, prevState) => {
   const filterChange =
     JSON.stringify(removeEmptyFilters(state.columnFilters)) !==
     JSON.stringify(removeEmptyFilters(prevState.columnFilters));
-  const pageChange = state.page !== prevState.page;
 
-  if (sortChange || filterChange) {
-    if (state.page !== 1) {
-      useTableDataStore.setState({ page: 1 }); // table data will be loaded when page change is detected
-      return;
-    }
+  if ((sortChange || filterChange) && state.page !== 1) {
+    useTableDataStore.setState({ page: 1 });
+    return;
   }
 
-  if (sortChange || filterChange || pageChange) {
+  const shouldReload =
+    sortChange || filterChange || state.page !== prevState.page;
+
+  if (shouldReload) {
     const currentTable = useTablesStore.getState().currentTable;
     if (currentTable) {
       useTableDataStore.getState().loadTableData(currentTable);
