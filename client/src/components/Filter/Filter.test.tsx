@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useTableDataStore } from "../../../store/useTableDataStore";
+import { useTableDataStore } from "../../store/useTableDataStore";
 import { render, screen } from "@testing-library/react";
 import { Filter } from "./Filter";
 import userEvent from "@testing-library/user-event";
-import type { Field } from "../../../types/types";
+import type { Field } from "../../types/types";
 
 const tableProperties: Field[] = [
   { name: "id", type: "number", editable: false },
@@ -35,9 +35,9 @@ describe("Filter", () => {
 
     const inputs = screen.getAllByRole("textbox");
     expect(inputs.length).toEqual(3);
-    expect(screen.getAllByText("id")).toHaveLength(2);
-    expect(screen.getAllByText("name")).toHaveLength(2);
-    expect(screen.getAllByText("totalSpent")).toHaveLength(2);
+    expect(screen.getAllByText("ID")).toHaveLength(2); // select + filter label
+    expect(screen.getAllByText("Name")).toHaveLength(2);
+    expect(screen.getAllByText("Total Spent")).toHaveLength(2);
   });
 
   it("does not add duplicate columnFilters", async () => {
@@ -46,6 +46,38 @@ describe("Filter", () => {
     await userEvent.selectOptions(screen.getByRole("combobox"), "name");
 
     expect(screen.getAllByRole("textbox")).toHaveLength(1);
+  });
+
+  it("resets the select to empty after adding a filter", async () => {
+    render(<Filter />);
+    await userEvent.selectOptions(screen.getByRole("combobox"), "name");
+
+    expect(screen.getByRole("combobox")).toHaveValue("");
+  });
+
+  it("removes a filter when the remove button is clicked", async () => {
+    render(<Filter />);
+    await userEvent.selectOptions(screen.getByRole("combobox"), "name");
+    await userEvent.selectOptions(screen.getByRole("combobox"), "totalSpent");
+
+    expect(screen.getAllByRole("textbox")).toHaveLength(2);
+
+    const removeButtons = screen.getAllByText("✕");
+    await userEvent.click(removeButtons[0]);
+
+    expect(screen.getAllByRole("textbox")).toHaveLength(1);
+    expect(screen.getAllByText("Name")).toHaveLength(1);
+    expect(screen.getAllByText("Total Spent")).toHaveLength(2);
+  });
+
+  it("removes the filter from the store when remove is clicked", async () => {
+    render(<Filter />);
+    await userEvent.selectOptions(screen.getByRole("combobox"), "name");
+
+    await userEvent.click(screen.getByText("✕"));
+
+    const state = useTableDataStore.getState();
+    expect(state.columnFilters).toEqual({});
   });
 
   it("updates the columnFilters when text is input", async () => {

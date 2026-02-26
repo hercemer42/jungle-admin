@@ -162,6 +162,37 @@ describe("table data loading", () => {
   });
 });
 
+describe("filter removal", () => {
+  it("removes a filter property from columnFilters", () => {
+    useTableDataStore.setState({
+      columnFilters: { name: "Alice", totalSpent: "500" },
+    });
+
+    useTableDataStore.getState().removeFilterProperty("name");
+
+    const state = useTableDataStore.getState();
+    expect(state.columnFilters).toEqual({ totalSpent: "500" });
+  });
+
+  it("handles removing the only filter", () => {
+    useTableDataStore.setState({ columnFilters: { name: "Alice" } });
+
+    useTableDataStore.getState().removeFilterProperty("name");
+
+    const state = useTableDataStore.getState();
+    expect(state.columnFilters).toEqual({});
+  });
+
+  it("does not break when removing a non-existent filter", () => {
+    useTableDataStore.setState({ columnFilters: { name: "Alice" } });
+
+    useTableDataStore.getState().removeFilterProperty("totalSpent");
+
+    const state = useTableDataStore.getState();
+    expect(state.columnFilters).toEqual({ name: "Alice" });
+  });
+});
+
 describe("table data subscription", () => {
   it("resets the page to 1 when column filters are applied", () => {
     useTableDataStore.setState({ page: 3, pageCount: 5 });

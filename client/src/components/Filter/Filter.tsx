@@ -1,12 +1,15 @@
 import { useMemo } from "react";
-import { useTableDataStore } from "../../../store/useTableDataStore.ts";
-import type { ColumnFilterProperty } from "../../../types/types.tsx";
-import { debounce } from "../../../utils/utils.ts";
+import { useTableDataStore } from "../../store/useTableDataStore.ts";
+import type { ColumnFilterProperty } from "../../types/types.tsx";
+import { debounce, formatTableAndColumnNames } from "../../utils/utils.ts";
 import "./Filter.css";
 
 function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
   const setFilterProperty = useTableDataStore(
     (state) => state.setFilterProperty,
+  );
+  const removeFilterProperty = useTableDataStore(
+    (state) => state.removeFilterProperty,
   );
 
   const processChange = useMemo(
@@ -18,13 +21,21 @@ function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
   );
 
   return (
-    <label>
-      {filterName}
-      <input
-        onChange={(e) => processChange(filterName, e.target.value)}
-        name="FilterInput"
-      />
-    </label>
+    <>
+      <label>
+        <span>{formatTableAndColumnNames(filterName)}</span>
+        <input
+          onChange={(e) => processChange(filterName, e.target.value)}
+          name="FilterInput"
+        />
+      </label>
+      <span
+        className="removeFilter"
+        onClick={() => removeFilterProperty(filterName)}
+      >
+        ✕
+      </span>
+    </>
   );
 }
 
@@ -41,6 +52,7 @@ function Filter() {
     if (!filter) {
       setFilterProperty(filterName, "");
     }
+    e.target.value = "";
   };
 
   return (
@@ -48,9 +60,11 @@ function Filter() {
       <label>
         Add Filter
         <select onChange={addFilter} defaultValue="">
-          <option value="" disabled key="default"></option>
+          <option value="" disabled hidden key="default"></option>
           {tableProperties.map((property) => (
-            <option key={property.name}>{property.name}</option>
+            <option key={property.name} value={property.name}>
+              {formatTableAndColumnNames(property.name)}
+            </option>
           ))}
         </select>
       </label>

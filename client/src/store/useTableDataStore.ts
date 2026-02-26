@@ -25,6 +25,7 @@ interface TableDataStore {
     filterProperty: ColumnFilterProperty,
     filterValue: string,
   ) => void;
+  removeFilterProperty: (filterProperty: ColumnFilterProperty) => void;
   loadTableData: (tableName: string) => Promise<void>;
   selectedRow: Row | null;
   openRowView: (row: Row) => void;
@@ -49,6 +50,12 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     set((state) => ({
       columnFilters: { ...state.columnFilters, [filterProperty]: filterValue },
     })),
+  removeFilterProperty: (filterProperty) =>
+    set((state) => {
+      const { [filterProperty]: _unused, ...rest } = state.columnFilters;
+      void _unused;
+      return { columnFilters: rest };
+    }),
   loadTableData: async (tableName: string) => {
     const state = useTableDataStore.getState();
     const tableData = await fetchTable(

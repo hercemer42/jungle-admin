@@ -1,11 +1,23 @@
 .filter {
-    margin-bottom: 20px;
-}
-
-select {
+  margin-bottom: 20px;
+  select {
     margin-left: 10px;
-}
+  }
 
-label {
-    margin-left: 10px;
+  label {
+    margin-left: 15px;
+    span {
+      margin-right: 5px;
+    }
+  }
+
+  .removeFilter {
+    position: relative;
+    top: 2px;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-left: 5px;
+    cursor: pointer;
+    color: red;
+  }
 }
