@@ -21,7 +21,7 @@ function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
   );
 
   return (
-    <>
+    <div className="filter-input">
       <label>
         <span>{formatTableAndColumnNames(filterName)}</span>
         <input
@@ -35,7 +35,7 @@ function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
       >
         ✕
       </span>
-    </>
+    </div>
   );
 }
 

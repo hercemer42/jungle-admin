@@ -1,22 +1,35 @@
 .filter {
   grid-area: filter;
   background: white;
-  padding-bottom: 20px;
-  padding-top: 20px;
+  padding: 0 0 0 10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  overflow: hidden;
+
   select {
     margin-left: 10px;
+    font-size: inherit;
+  }
+
+  .filter-input {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
   }
 
   label {
-    margin-left: 15px;
+    display: flex;
+    align-items: center;
     span {
       margin-right: 5px;
+    }
+    input {
+      box-sizing: border-box;
     }
   }
 
   .removeFilter {
-    position: relative;
-    top: 2px;
     font-weight: bold;
     font-size: 1.2em;
     margin-left: 5px;

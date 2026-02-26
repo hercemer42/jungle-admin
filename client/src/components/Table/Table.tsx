@@ -19,6 +19,7 @@ function Table() {
 
   return (
     <div className="table-container">
+      <div className="table-scroll">
       <table>
         <thead>
           <tr>
@@ -67,6 +68,7 @@ function Table() {
           ) : null}
         </tbody>
       </table>
+      </div>
       {pageCount > 1 && <Pagination />}
     </div>
   );

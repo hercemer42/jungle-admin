@@ -3,10 +3,17 @@
   border-right: thin lightgray solid;
   margin-bottom: 20px;
   background: rgb(228, 228, 228);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .table-scroll {
+    overflow-x: auto;
+    flex: 1;
+  }
 
   table {
     width: 100%;
-    table-layout: fixed;
     background: white;
     border-collapse: collapse;
   }
@@ -25,6 +32,12 @@
     text-overflow: ellipsis;
     resize: horizontal;
     white-space: nowrap;
+    padding: 5px 16px;
+    border-right: 1px solid #b0b0b0;
+
+    &:last-child {
+      border-right: none;
+    }
   }
 
   td {
@@ -33,6 +46,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 80ch;
   }
 
   tbody tr:nth-child(even) {
