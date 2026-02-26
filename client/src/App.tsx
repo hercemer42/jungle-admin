@@ -8,14 +8,10 @@ import { Tables } from "./components/Tables/Tables.tsx";
 function App() {
   return (
     <>
-      <div className="side-panel">
-        <Tables />
-      </div>
-      <div className="main-panel">
-        <Filter />
-        <Table />
-        <RowView />
-      </div>
+      <Tables />
+      <Filter />
+      <Table />
+      <RowView />
       <Toaster />
     </>
   );

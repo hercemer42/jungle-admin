@@ -15,10 +15,11 @@ function Table() {
   const primaryKeyColumns = useTableDataStore(
     (state) => state.primaryKeyColumns,
   );
+  const pageCount = useTableDataStore((state) => state.pageCount);
 
   return (
-    <div>
-      <table className="table-rows">
+    <div className="table-container">
+      <table>
         <thead>
           <tr>
             {tableProperties.map((property) => (
@@ -46,6 +47,7 @@ function Table() {
                 {tableProperties.map((property) => (
                   <td
                     key={property.name}
+                    title={formatCellValue(row[property.name], property.type)}
                     className={
                       property.type === "datetime-local" ||
                       property.type === "date"
@@ -65,7 +67,7 @@ function Table() {
           ) : null}
         </tbody>
       </table>
-      <Pagination />
+      {pageCount > 1 && <Pagination />}
     </div>
   );
 }

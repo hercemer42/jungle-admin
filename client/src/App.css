@@ -1,15 +1,15 @@
 #root {
-  width: 100%;
-  margin: 0 auto;
-  padding: 2rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: ". filter" "sidebar table";
+  min-height: 100vh;
 }
 
-.side-panel {
-  width: 300px;
-  flex-shrink: 0;
+.tables {
+  grid-area: sidebar;
 }
 
-.main-panel {
-  flex: 1;
+.table-container {
+  grid-area: table;
 }

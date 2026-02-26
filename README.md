@@ -1,73 +1,103 @@
-# React + TypeScript + Vite
+# Admin Panel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack web application for browsing, filtering, sorting, and editing PostgreSQL database tables.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend:** React, TypeScript, Vite, Zustand
+- **Backend:** Express, TypeScript, PostgreSQL
+- **Testing:** Vitest, React Testing Library
+- **Deployment:** Docker & Docker Compose
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Auto-discovers all PostgreSQL tables
+- Column filtering (case-insensitive search)
+- Sortable columns (ascending/descending)
+- Pagination
+- Inline row editing via modal (respects column constraints)
+- Read-only primary/foreign key columns
+- Toast notifications for save feedback
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js
+- Docker & Docker Compose (for database)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Setup
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Start the database:
+
+```sh
+docker compose up -d
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+npm install --prefix client
+npm install --prefix server
 ```
+
+3. Configure environment variables:
+
+Create a `server/.env` file:
+
+```
+DB_HOST=localhost
+DB_PORT=5433
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=postgres
+```
+
+4. Start the development servers:
+
+```sh
+# Terminal 1 - Backend
+npm run dev --prefix server
+
+# Terminal 2 - Frontend
+npm run dev --prefix client
+```
+
+The client runs at `http://localhost:5173` and proxies API requests to the server at `http://localhost:3000`.
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run test` | Run all tests (client + server) |
+| `npm run test:client` | Run client tests |
+| `npm run test:server` | Run server tests |
+| `npm run lint` | Lint client and server |
+
+## Project Structure
+
+```
+├── client/                 # React frontend
+│   └── src/
+│       ├── api/            # API client functions
+│       ├── components/     # React components
+│       ├── store/          # Zustand state stores
+│       ├── types/          # TypeScript types
+│       └── utils/          # Formatting utilities
+├── server/                 # Express backend
+│   └── src/
+│       ├── routes/         # API endpoints
+│       ├── queries/        # Database queries
+│       ├── db.ts           # PostgreSQL connection
+│       ├── types/          # TypeScript types
+│       └── utils/          # Error handling
+└── docker/                 # Docker & DB init scripts
+```
+
+## API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/tables` | List all database tables |
+| GET | `/api/tables/:name` | Fetch table data (supports filtering, sorting, pagination) |
+| PUT | `/api/tables/:name/rows/` | Update a row |

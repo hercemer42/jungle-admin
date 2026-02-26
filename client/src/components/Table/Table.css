@@ -1,9 +1,18 @@
-.table-rows {
-  width: 100%;
+.table-container {
+  margin-right: 20px;
+  border-right: thin lightgray solid;
+  margin-bottom: 20px;
+  background: rgb(228, 228, 228);
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+    background: white;
+    border-collapse: collapse;
+  }
 
   thead {
     background: lightgrey;
-    margin-bottom: 20px;
   }
 
   tbody tr:first-child td {
@@ -12,11 +21,18 @@
 
   th {
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    resize: horizontal;
+    white-space: nowrap;
   }
 
   td {
     padding: 5px 10px;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   tbody tr:nth-child(even) {

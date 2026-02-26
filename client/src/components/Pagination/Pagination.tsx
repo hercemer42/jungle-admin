@@ -1,4 +1,5 @@
 import { useTableDataStore } from "../../store/useTableDataStore";
+import "./Pagination.css";
 
 function Pagination() {
   const page = useTableDataStore((state) => state.page);
@@ -9,15 +10,15 @@ function Pagination() {
   if (pageCount <= 0) return null;
 
   return (
-    <div>
+    <div className="pagination">
+      <button onClick={() => setPreviousPage()} disabled={page === 1}>
+        ‹
+      </button>
       <span>
-        Page {page} of {pageCount}
+        {page} of {pageCount}
       </span>
       <button onClick={() => setNextPage()} disabled={page >= pageCount}>
-        Next
-      </button>
-      <button onClick={() => setPreviousPage()} disabled={page === 1}>
-        Previous
+        ›
       </button>
     </div>
   );

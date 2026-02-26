@@ -1,5 +1,8 @@
 .filter {
-  margin-bottom: 20px;
+  grid-area: filter;
+  background: white;
+  padding-bottom: 20px;
+  padding-top: 20px;
   select {
     margin-left: 10px;
   }
