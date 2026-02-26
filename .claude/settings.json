@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm install -D eslint @eslint/js globals typescript-eslint prettier)",
-      "Bash(npm run lint)"
-    ]
-  }
-}
