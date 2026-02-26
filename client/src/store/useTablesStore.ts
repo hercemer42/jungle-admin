@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { fetchTables } from "../api/tables";
 import { useTableDataStore } from "./useTableDataStore";
+import { useToastStore } from "./useToastStore";
 
 interface TablesState {
   tables: string[];
@@ -13,11 +14,17 @@ const useTablesStore = create<TablesState>((set) => ({
   tables: [],
   selectedTable: null,
   loadTables: async () => {
-    const tables = await fetchTables();
-    const firstTable = tables[0] || null;
-    set({ tables, selectedTable: firstTable });
-    if (firstTable) {
-      await useTableDataStore.getState().loadTableData(firstTable);
+    try {
+      const tables = await fetchTables();
+      const firstTable = tables[0] || null;
+      set({ tables, selectedTable: firstTable });
+      if (firstTable) {
+        await useTableDataStore.getState().loadTableData(firstTable);
+      }
+    } catch {
+      useToastStore
+        .getState()
+        .addToast({ message: "Failed to load tables", type: "error" });
     }
   },
   setSelectedTable: async (tableName: string) => {
@@ -28,7 +35,13 @@ const useTablesStore = create<TablesState>((set) => ({
       sortDirection: "asc",
       page: 1,
     });
-    await useTableDataStore.getState().loadTableData(tableName);
+    try {
+      await useTableDataStore.getState().loadTableData(tableName);
+    } catch {
+      useToastStore
+        .getState()
+        .addToast({ message: "Failed to load table data", type: "error" });
+    }
   },
 }));
 

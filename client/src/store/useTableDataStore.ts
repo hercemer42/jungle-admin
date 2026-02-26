@@ -8,6 +8,7 @@ import {
   removeEmptyFilters,
 } from "../utils/utils.ts";
 import { useTablesStore } from "./useTablesStore.ts";
+import { useToastStore } from "./useToastStore.ts";
 import type {
   Row,
   Field,
@@ -57,35 +58,42 @@ const useTableDataStore = create<TableDataStore>((set) => ({
       return { columnFilters: rest };
     }),
   loadTableData: async (tableName: string) => {
-    const state = useTableDataStore.getState();
-    const tableData = await fetchTable(
-      tableName,
-      state.page,
-      state.columnFilters,
-      state.sortColumn,
-      state.sortDirection,
-    );
-    if (!tableData) {
-      set({ tableProperties: [], rows: [] });
-      return;
-    }
-    if (tableData.fields && tableData.fields.length > 0) {
-      set({ tableProperties: convertServerTypeToInputType(tableData.fields) });
-    }
-    if (tableData.rows) {
-      set({
-        rows: convertServerDatesToInputDates(tableData.rows, tableData.fields),
-      });
-    }
-    if (tableData.pageCount !== undefined) {
-      set({ pageCount: tableData.pageCount });
-    }
-    if (tableData.page !== undefined) {
-      set({ page: tableData.page });
-    }
-
-    if (tableData.primaryKeyColumns) {
-      set({ primaryKeyColumns: tableData.primaryKeyColumns });
+    try {
+      const state = useTableDataStore.getState();
+      const tableData = await fetchTable(
+        tableName,
+        state.page,
+        state.columnFilters,
+        state.sortColumn,
+        state.sortDirection,
+      );
+      if (!tableData) {
+        set({ tableProperties: [], rows: [] });
+        return;
+      }
+      if (tableData.fields && tableData.fields.length > 0) {
+        set({
+          tableProperties: convertServerTypeToInputType(tableData.fields),
+        });
+      }
+      if (tableData.rows) {
+        set({
+          rows: convertServerDatesToInputDates(tableData.rows, tableData.fields),
+        });
+      }
+      if (tableData.pageCount !== undefined) {
+        set({ pageCount: tableData.pageCount });
+      }
+      if (tableData.page !== undefined) {
+        set({ page: tableData.page });
+      }
+      if (tableData.primaryKeyColumns) {
+        set({ primaryKeyColumns: tableData.primaryKeyColumns });
+      }
+    } catch {
+      useToastStore
+        .getState()
+        .addToast({ message: "Failed to load table data", type: "error" });
     }
   },
   selectedRow: null,
@@ -109,21 +117,31 @@ const useTableDataStore = create<TableDataStore>((set) => ({
       ]) as [string, string | number][];
 
     if (!selectedTable) return;
-    const savedRow = await saveRow(selectedTable, updatedRow, primaryKeys);
-    set((state) => {
-      const convertedRow = convertServerDatesToInputDates(
-        [savedRow],
-        state.tableProperties,
-      )[0];
-      return {
-        selectedRow: convertedRow,
-        rows: state.rows.map((row) =>
-          state.primaryKeyColumns.every((col) => row[col] === savedRow[col])
-            ? convertedRow
-            : row,
-        ),
-      };
-    });
+    try {
+      const savedRow = await saveRow(selectedTable, updatedRow, primaryKeys);
+      set((state) => {
+        const convertedRow = convertServerDatesToInputDates(
+          [savedRow],
+          state.tableProperties,
+        )[0];
+        return {
+          selectedRow: convertedRow,
+          rows: state.rows.map((row) =>
+            state.primaryKeyColumns.every((col) => row[col] === savedRow[col])
+              ? convertedRow
+              : row,
+          ),
+        };
+      });
+      useToastStore
+        .getState()
+        .addToast({ message: "Row saved successfully", type: "success" });
+    } catch (e) {
+      useToastStore.getState().addToast({
+        message: e instanceof Error ? e.message : "Failed to save row",
+        type: "error",
+      });
+    }
   },
   sortColumn: null,
   setSortColumn: (column) => {
