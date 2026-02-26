@@ -69,6 +69,16 @@ describe("row saving", () => {
     expect(tablesApi.saveRow).not.toHaveBeenCalled();
   });
 
+  it("propagates errors from saveRow", async () => {
+    vi.mocked(tablesApi.saveRow).mockRejectedValue(
+      new Error("Duplicate key"),
+    );
+
+    await expect(
+      useTableDataStore.getState().updateRow({ name: "Bob" }),
+    ).rejects.toThrow("Duplicate key");
+  });
+
   it("converts datetime fields in the saved row", async () => {
     const updatedFromServer = {
       ...fakeRow,

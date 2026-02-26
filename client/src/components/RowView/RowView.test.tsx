@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useTableDataStore } from "../../store/useTableDataStore";
+import { useToastStore } from "../../store/useToastStore";
 import { RowView } from "./RowView";
 import type { Row, Field } from "../../types/types";
 
@@ -102,7 +103,7 @@ describe("RowView", () => {
   });
 
   it("calls updateRow and exits editing on Save", async () => {
-    const updateRowSpy = vi.fn();
+    const updateRowSpy = vi.fn().mockResolvedValue(undefined);
     useTableDataStore.setState({ updateRow: updateRowSpy });
     render(<RowView />);
 
@@ -121,7 +122,7 @@ describe("RowView", () => {
   });
 
   it("passes checkbox values correctly on Save", async () => {
-    const updateRowSpy = vi.fn();
+    const updateRowSpy = vi.fn().mockResolvedValue(undefined);
     useTableDataStore.setState({ updateRow: updateRowSpy });
     render(<RowView />);
 
@@ -132,6 +133,40 @@ describe("RowView", () => {
     expect(updateRowSpy).toHaveBeenCalledWith(
       expect.objectContaining({ isActive: false }),
     );
+  });
+
+  it("shows success toast after saving", async () => {
+    useToastStore.setState({ toasts: [] });
+    const updateRowSpy = vi.fn().mockResolvedValue(undefined);
+    useTableDataStore.setState({ updateRow: updateRowSpy });
+    render(<RowView />);
+
+    await userEvent.click(screen.getByText("Edit"));
+    await userEvent.click(screen.getByText("Save"));
+
+    const toasts = useToastStore.getState().toasts;
+    expect(toasts).toHaveLength(1);
+    expect(toasts[0]).toMatchObject({ type: "success" });
+  });
+
+  it("shows error toast and stays in edit mode on save failure", async () => {
+    useToastStore.setState({ toasts: [] });
+    const updateRowSpy = vi
+      .fn()
+      .mockRejectedValue(new Error("Duplicate key"));
+    useTableDataStore.setState({ updateRow: updateRowSpy });
+    render(<RowView />);
+
+    await userEvent.click(screen.getByText("Edit"));
+    await userEvent.click(screen.getByText("Save"));
+
+    const toasts = useToastStore.getState().toasts;
+    expect(toasts).toHaveLength(1);
+    expect(toasts[0]).toMatchObject({
+      type: "error",
+      message: "Duplicate key",
+    });
+    expect(screen.getByText("Save")).toBeInTheDocument();
   });
 
   it("calls closeRowView when the modal backdrop is clicked", async () => {

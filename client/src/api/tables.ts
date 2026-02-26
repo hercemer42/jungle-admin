@@ -57,7 +57,8 @@ export async function saveRow(
     },
   );
   if (!response.ok) {
-    throw new Error("Failed to save row");
+    const body = await response.json().catch(() => null);
+    throw new Error(body?.error || "Failed to save row");
   }
   const data = await response.json();
   return data;

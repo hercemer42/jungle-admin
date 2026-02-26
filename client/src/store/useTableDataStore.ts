@@ -29,7 +29,7 @@ interface TableDataStore {
   selectedRow: Row | null;
   openRowView: (row: Row) => void;
   closeRowView: () => void;
-  updateRow: (updatedRow: Row) => void;
+  updateRow: (updatedRow: Row) => Promise<void>;
   sortColumn: SortColumn;
   setSortColumn: (column: SortColumn) => void;
   sortDirection: SortDirection;
