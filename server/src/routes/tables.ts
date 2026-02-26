@@ -1,19 +1,18 @@
+import type { Request, Response } from "express";
 import { Router } from "express";
 import { getTableNames, getTableData, saveRow } from "../queries/tables.ts";
+import { handleError } from "../utils/errors.ts";
 
 const tablesRouter = Router();
 type ColumnFilters = Record<string, string>;
 
-tablesRouter.get("/", async (req, res) =>
+tablesRouter.get("/", async (_req: Request, res: Response) => {
   getTableNames()
     .then((tableNames) => res.json({ tableNames }))
-    .catch((err) => {
-      console.error(err);
-      res.status(err.status || 500).json({ error: err.message });
-    }),
-);
+    .catch((err) => handleError(res, err));
+});
 
-tablesRouter.get("/:name", async (req, res) => {
+tablesRouter.get("/:name", async (req: Request<{ name: string }>, res: Response) => {
   const page = req.query.page ? Number(req.query.page) : 1;
   const sortColumn = req.query.sortColumn
     ? String(req.query.sortColumn)
@@ -23,13 +22,10 @@ tablesRouter.get("/:name", async (req, res) => {
 
   getTableData(req.params.name, page, sortColumn, sortDirection, columnFilters)
     .then((data) => res.json(data))
-    .catch((err) => {
-      console.error(err);
-      res.status(err.status || 500).json({ error: err.message });
-    });
+    .catch((err) => handleError(res, err));
 });
 
-tablesRouter.put("/:name/rows/", async (req, res) => {
+tablesRouter.put("/:name/rows/", async (req: Request<{ name: string }>, res: Response) => {
   const { name } = req.params;
   const updatedRow = req.body;
   const primaryKeys = Object.entries(req.query.primaryKeys || {}) as [
@@ -53,9 +49,7 @@ tablesRouter.put("/:name/rows/", async (req, res) => {
 
   saveRow(name, updatedRow, primaryKeys)
     .then((savedRow) => res.json(savedRow))
-    .catch((err) => {
-      res.status(err.status || 500).json({ error: err.message });
-    });
+    .catch((err) => handleError(res, err));
 });
 
 export default tablesRouter;

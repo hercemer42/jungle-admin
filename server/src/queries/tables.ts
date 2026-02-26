@@ -1,22 +1,11 @@
 import { pool } from "../db";
 import type { ConstraintRow, SortDirection } from "../types/types";
+import { QueryError } from "../utils/errors";
 import { getDataFromPostgresField, validateParameter } from "../utils/utils";
 
-let cachedTableNames: string[] | null = null;
+const PAGE_LIMIT = 10;
 
-class QueryError extends Error {
-  constructor(
-    message: string,
-    public status: number = 500,
-    err: Error | null = null,
-  ) {
-    if (!err) {
-      err = new Error(message);
-    }
-    super(message);
-    console.error(`QueryError: ${message} (status: ${status}) ${err}`);
-  }
-}
+let cachedTableNames: string[] | null = null;
 
 const clearCache = () => {
   cachedTableNames = null;
@@ -28,7 +17,7 @@ const getTableNames = async () => {
   }
 
   const entries = await pool
-    .query(
+    .query<{ table_name: string }>(
       `
     SELECT table_name
     FROM information_schema.tables
@@ -40,8 +29,23 @@ const getTableNames = async () => {
       throw new QueryError("Failed to fetch table names", 500, err);
     });
 
-  cachedTableNames = entries.rows.map((row: { table_name: string }) => row.table_name);
+  cachedTableNames = entries.rows.map((row) => row.table_name);
   return cachedTableNames;
+};
+
+const ensureTableExists = async (tableName: string) => {
+  if (!cachedTableNames) {
+    await getTableNames();
+  }
+  if (!cachedTableNames) {
+    throw new QueryError("Failed to fetch table names", 500);
+  }
+  if (!validateParameter(tableName)) {
+    throw new QueryError("Invalid table name", 400);
+  }
+  if (!cachedTableNames.includes(tableName)) {
+    throw new QueryError(`Table "${tableName}" does not exist`, 404);
+  }
 };
 
 const getTableData = async (
@@ -51,21 +55,7 @@ const getTableData = async (
   sortDirection?: SortDirection,
   columnFilters?: Record<string, string> | undefined,
 ) => {
-  if (!cachedTableNames) {
-    await getTableNames();
-  }
-
-  if (!cachedTableNames) {
-    throw new QueryError("Failed to fetch table names", 500);
-  }
-
-  if (!validateParameter(tableName)) {
-    throw new QueryError("Invalid table name", 400);
-  }
-
-  if (!cachedTableNames.includes(tableName)) {
-    throw new QueryError(`Table "${tableName}" does not exist`, 404);
-  }
+  await ensureTableExists(tableName);
 
   if (typeof page !== "number" || isNaN(page)) {
     throw new QueryError("Page number must be a valid number", 400);
@@ -90,11 +80,8 @@ const getTableData = async (
     }
   }
 
-  const page_limit = 10;
   const filterColumns = columnFilters ? Object.keys(columnFilters) : [];
-  const filterParams = columnFilters
-    ? Object.values(columnFilters).map(String)
-    : [];
+  const filterParams = columnFilters ? Object.values(columnFilters) : [];
 
   const whereClause =
     filterColumns.length > 0
@@ -104,27 +91,24 @@ const getTableData = async (
           .join(" AND ")
       : "";
 
-  const [entries, constraints] = await Promise.all([
+  const orderClause = sortColumn
+    ? `ORDER BY ${sortColumn} ${sortDirection === "desc" ? "DESC" : "ASC"}`
+    : "";
+
+  const [rows, meta, constraints] = await Promise.all([
     pool.query(
-      `
-      WITH table_meta AS (
-        SELECT
-          COUNT(*) AS total_count,
-          CEIL(COUNT(*)::numeric / ${page_limit}) AS page_count
-        FROM ${tableName}
-        ${whereClause}
-      )
-      SELECT t.*, tm.total_count::integer, tm.page_count::integer
-      FROM ${tableName} t, table_meta tm
-      ${whereClause}
-      ${
-        sortColumn
-          ? `ORDER BY ${sortColumn} ${sortDirection === "desc" ? "DESC" : "ASC"}`
-          : ""
-      }
-      LIMIT ${page_limit} OFFSET ${(page - 1) * page_limit}
-     `,
-      filterParams,
+      `SELECT * FROM ${tableName}
+       ${whereClause}
+       ${orderClause}
+       LIMIT $${filterParams.length + 1} OFFSET $${filterParams.length + 2}`,
+      [...filterParams, PAGE_LIMIT, (page - 1) * PAGE_LIMIT],
+    ),
+    pool.query<{ total_count: number; page_count: number }>(
+      `SELECT COUNT(*)::integer AS total_count,
+              CEIL(COUNT(*)::numeric / $${filterParams.length + 1})::integer AS page_count
+       FROM ${tableName}
+       ${whereClause}`,
+      [...filterParams, PAGE_LIMIT],
     ),
     pool.query(
       `SELECT kcu.column_name, tc.constraint_type
@@ -143,27 +127,22 @@ const getTableData = async (
     );
   });
 
-  const nonEditableColumns = new Set<string>(
-    constraints.rows.map((row: ConstraintRow) => row.column_name),
-  );
-  const primaryKeyColumns = new Set<string>(
-    constraints.rows
-      .filter((row: ConstraintRow) => row.constraint_type === "PRIMARY KEY")
-      .map((row: ConstraintRow) => row.column_name),
-  );
+  const nonEditableColumns = new Set<string>();
+  const primaryKeyColumns = new Set<string>();
+  for (const row of constraints.rows as ConstraintRow[]) {
+    nonEditableColumns.add(row.column_name);
+    if (row.constraint_type === "PRIMARY KEY") {
+      primaryKeyColumns.add(row.column_name);
+    }
+  }
 
   return {
-    fields: entries.fields
-      .filter(
-        (field) =>
-          field.name !== "total_count" && field.name !== "page_count",
-      )
-      .map((field) =>
-        getDataFromPostgresField(field, nonEditableColumns, primaryKeyColumns),
-      ),
-    rows: entries.rows.map(({ total_count: _total_count, page_count: _page_count, ...row }: Record<string, unknown>) => row),
-    pageCount: entries.rows.length > 0 ? entries.rows[0].page_count : 0,
-    totalCount: entries.rows.length > 0 ? entries.rows[0].total_count : 0,
+    fields: rows.fields.map((field) =>
+      getDataFromPostgresField(field, nonEditableColumns, primaryKeyColumns),
+    ),
+    rows: rows.rows,
+    pageCount: meta.rows[0]?.page_count ?? 0,
+    totalCount: meta.rows[0]?.total_count ?? 0,
     primaryKeyColumns: Array.from(primaryKeyColumns),
   };
 };
@@ -173,20 +152,7 @@ const saveRow = async (
   updatedRow: Record<string, unknown>,
   primaryKeys: [string, string | number][],
 ) => {
-  if (!cachedTableNames) {
-    await getTableNames();
-  }
-  if (!cachedTableNames) {
-    throw new QueryError("Failed to fetch table names", 500);
-  }
-
-  if (!validateParameter(tableName)) {
-    throw new QueryError("Invalid table name", 400);
-  }
-
-  if (!cachedTableNames.includes(tableName)) {
-    throw new QueryError(`Table "${tableName}" does not exist`, 404);
-  }
+  await ensureTableExists(tableName);
 
   for (const col of Object.keys(updatedRow)) {
     if (!validateParameter(col)) {

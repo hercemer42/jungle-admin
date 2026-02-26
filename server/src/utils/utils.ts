@@ -1,3 +1,5 @@
+import type { PgField } from "../types/types";
+
 const oidToType: Record<number, string> = {
   16: "boolean", // bool
   20: "number", // int8
@@ -13,8 +15,6 @@ const oidToType: Record<number, string> = {
   1114: "datetime", // timestamp
   1184: "datetime", // timestamptz
 };
-
-import type { PgField } from "../types/types";
 
 function getDataFromPostgresField(
   field: PgField,
