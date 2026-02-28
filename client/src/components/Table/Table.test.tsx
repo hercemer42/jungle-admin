@@ -102,6 +102,7 @@ beforeEach(() => {
   useTableDataStore.setState({
     tableProperties,
     selectedRow: null,
+    primaryKeyColumns: ["id"],
     sortColumn: null,
     sortDirection: "asc",
     rows: rows,
