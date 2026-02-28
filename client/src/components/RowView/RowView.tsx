@@ -1,3 +1,4 @@
+import { useTableDataStore } from "../../store/useTableDataStore";
 import { formatCellValue, formatTableAndColumnNames } from "../../utils/utils";
 import { Modal } from "../UI/Modal/Modal";
 import "./RowView.css";
@@ -13,10 +14,17 @@ function RowView() {
     tableProperties,
   } = useRowView();
 
+  const primaryKeyColumns = useTableDataStore(
+    (state) => state.primaryKeyColumns,
+  );
+
   return selectedRow ? (
     <Modal onClose={closeRowView}>
       <div className="selected-row">
-        <form onSubmit={handleSave}>
+        <form
+          key={primaryKeyColumns.map((col) => selectedRow[col]).join("-")}
+          onSubmit={handleSave}
+        >
           <div className="header">
             <h3>Record details</h3>
             <div className="controls">
