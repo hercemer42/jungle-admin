@@ -1,5 +1,5 @@
 import { useTableDataStore } from "../../store/useTableDataStore";
-import "./Pagination.css";
+import styles from "./Pagination.module.css";
 
 function Pagination() {
   const page = useTableDataStore((state) => state.page);
@@ -10,7 +10,7 @@ function Pagination() {
   if (pageCount <= 0) return null;
 
   return (
-    <div className="pagination">
+    <div className={styles.pagination}>
       <button onClick={() => setPreviousPage()} disabled={page === 1}>
         ‹
       </button>

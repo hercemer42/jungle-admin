@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(165, 165, 165, 0.527);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,27 +13,27 @@
   height: 800px;
   max-width: calc(100% - 10px);
   max-height: calc(100% - 10px);
-  border: thin #7a8a50 solid;
-  background: #fcfcf7;
+  border: thin var(--green-600) solid;
+  background: var(--neutral-25);
   padding: 30px;
   overflow: auto;
 }
 
-.modal-header {
+.header {
   display: flex;
   justify-content: flex-end;
 }
 
-.modal-close {
+.close {
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
   padding: 2px 6px;
   background: none;
-  border: thin #7a8a50 solid;
+  border: thin var(--green-600) solid;
 
   &:focus-visible {
-    outline: 2px solid #3a7a2d;
+    outline: 2px solid var(--green-700);
     outline-offset: 2px;
   }
 }

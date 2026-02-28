@@ -18,18 +18,18 @@
   color: white;
   min-width: 250px;
   max-width: 400px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px var(--shadow);
 }
 
-.toast-success {
-  background: #3a7a2d;
+.success {
+  background: var(--green-700);
 }
 
-.toast-error {
-  background: #a04030;
+.error {
+  background: var(--red-600);
 }
 
-.toast-close {
+.close {
   background: none;
   border: none;
   color: white;

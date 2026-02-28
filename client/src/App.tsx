@@ -1,4 +1,4 @@
-import "./App.css";
+import styles from "./App.module.css";
 import { Table } from "./components/Table/Table.tsx";
 import { Filter } from "./components/Filter/Filter.tsx";
 import { RowView } from "./components/RowView/RowView.tsx";
@@ -10,7 +10,7 @@ import { ErrorBoundary } from "./components/UI/ErrorBoundary/ErrorBoundary.tsx";
 function App() {
   return (
     <ErrorBoundary>
-      <div className="logo">
+      <div className={styles.logo}>
         <JungleLogo />
         <span>Jungle Admin</span>
       </div>

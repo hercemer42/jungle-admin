@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import "./Modal.css";
+import styles from "./Modal.module.css";
 import type { ReactNode } from "react";
 
 export function Modal({
@@ -24,18 +24,18 @@ export function Modal({
   }, [onClose]);
 
   return (
-    <div className="backdrop" onClick={onClose}>
+    <div className={styles.backdrop} onClick={onClose}>
       <div
         ref={modalRef}
-        className="modal"
+        className={styles.modal}
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-header">
+        <div className={styles.header}>
           <button
-            className="modal-close"
+            className={styles.close}
             onClick={onClose}
             aria-label="Close dialog"
           >

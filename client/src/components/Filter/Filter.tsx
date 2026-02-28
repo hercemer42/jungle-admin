@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTableDataStore } from "../../store/useTableDataStore.ts";
 import type { ColumnFilterProperty } from "../../types/types.tsx";
 import { debounce, formatTableAndColumnNames } from "../../utils/utils.ts";
-import "./Filter.css";
+import styles from "./Filter.module.css";
 
 function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
   const setFilterProperty = useTableDataStore(
@@ -21,7 +21,7 @@ function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
   );
 
   return (
-    <div className="filter-input">
+    <div className={styles.filterInput}>
       <label>
         <span>{formatTableAndColumnNames(filterName)}</span>
         <input
@@ -30,7 +30,7 @@ function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
         />
       </label>
       <span
-        className="removeFilter"
+        className={styles.removeFilter}
         onClick={() => removeFilterProperty(filterName)}
       >
         ✕
@@ -56,7 +56,7 @@ function Filter() {
   };
 
   return (
-    <div className="filter">
+    <div className={styles.filter}>
       <label>
         Add Filter
         <select onChange={addFilter} defaultValue="">

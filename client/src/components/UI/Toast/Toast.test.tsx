@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { useToastStore } from "../../../store/useToastStore";
 import { Toaster } from "./Toast";
+import styles from "./Toast.module.css";
 
 beforeEach(() => {
   useToastStore.setState({ toasts: [] });
@@ -18,14 +19,14 @@ describe("Toaster", () => {
     useToastStore.getState().addToast({ message: "Row saved", type: "success" });
     render(<Toaster />);
     expect(screen.getByRole("status")).toHaveTextContent("Row saved");
-    expect(screen.getByRole("status")).toHaveClass("toast-success");
+    expect(screen.getByRole("status")).toHaveClass(styles.success);
   });
 
   it("renders an error toast", () => {
     useToastStore.getState().addToast({ message: "Save failed", type: "error" });
     render(<Toaster />);
     expect(screen.getByRole("status")).toHaveTextContent("Save failed");
-    expect(screen.getByRole("status")).toHaveClass("toast-error");
+    expect(screen.getByRole("status")).toHaveClass(styles.error);
   });
 
   describe("auto-dismiss", () => {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useToastStore } from "../../../store/useToastStore";
-import "./Toast.css";
+import styles from "./Toast.module.css";
 
 const AUTO_DISMISS_MS = 3000;
 
@@ -22,9 +22,9 @@ function ToastItem({
   }, [id, onDismiss]);
 
   return (
-    <div className={`toast toast-${type}`} role="status">
+    <div className={`${styles.toast} ${styles[type]}`} role="status">
       <span>{message}</span>
-      <button className="toast-close" onClick={() => onDismiss(id)}>
+      <button className={styles.close} onClick={() => onDismiss(id)}>
         ×
       </button>
     </div>
@@ -36,7 +36,7 @@ function Toaster() {
   const removeToast = useToastStore((state) => state.removeToast);
 
   return createPortal(
-    <div className="toaster">
+    <div className={styles.toaster}>
       {toasts.map((toast) => (
         <ToastItem
           key={toast.id}

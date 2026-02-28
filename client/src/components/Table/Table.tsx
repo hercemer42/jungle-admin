@@ -1,4 +1,4 @@
-import "./Table.css";
+import styles from "./Table.module.css";
 import { useTablesStore } from "../../store/useTablesStore";
 import { useTableDataStore } from "../../store/useTableDataStore";
 import { formatCellValue, formatTableAndColumnNames, onActivate } from "../../utils/utils";
@@ -20,9 +20,9 @@ function Table() {
   const loading = useTableDataStore((state) => state.loading);
 
   return (
-    <div className="table-container">
+    <div className={styles.container}>
       {loading && <LoadingSpinner />}
-      <div className="table-scroll">
+      <div className={styles.scroll}>
         <table>
           <thead>
             <tr>
@@ -58,8 +58,8 @@ function Table() {
                       className={
                         property.type === "datetime-local" ||
                         property.type === "date"
-                          ? "date"
-                          : ""
+                          ? styles.date
+                          : undefined
                       }
                     >
                       {formatCellValue(row[property.name], property.type)}

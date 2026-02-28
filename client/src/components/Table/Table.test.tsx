@@ -145,13 +145,13 @@ describe("Table", () => {
   it("shows loading spinner when loading is true", () => {
     useTableDataStore.setState({ loading: true });
     render(<Table />);
-    expect(document.querySelector(".loading-spinner")).toBeInTheDocument();
+    expect(screen.queryByRole("status")).toBeInTheDocument();
   });
 
   it("does not show loading spinner when loading is false", () => {
     useTableDataStore.setState({ loading: false });
     render(<Table />);
-    expect(document.querySelector(".loading-spinner")).not.toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("renders the correct cell values", () => {

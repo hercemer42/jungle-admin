@@ -1,0 +1,51 @@
+.selectedRow {
+  ul {
+    list-style: none;
+    padding: 0px;
+  }
+
+  li {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-left: 0px;
+    margin-bottom: 5px;
+  }
+
+  input,
+  .propertyValue {
+    margin-left: 30px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    font-size: 16px;
+    padding: 6px 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+
+    &:focus-visible {
+      outline: 2px solid var(--green-700);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.edit,
+.save {
+  background: var(--green-700);
+  color: white;
+}
+
+.cancel {
+  background: var(--green-200);
+  margin-right: 10px;
+}

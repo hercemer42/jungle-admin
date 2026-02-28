@@ -1,7 +1,7 @@
 import { useTableDataStore } from "../../store/useTableDataStore";
 import { formatCellValue, formatTableAndColumnNames } from "../../utils/utils";
 import { Modal } from "../UI/Modal/Modal";
-import "./RowView.css";
+import styles from "./RowView.module.css";
 import useRowView from "./useRowView";
 
 function RowView() {
@@ -20,31 +20,31 @@ function RowView() {
 
   return selectedRow ? (
     <Modal onClose={closeRowView}>
-      <div className="selected-row">
+      <div className={styles.selectedRow}>
         <form
           key={primaryKeyColumns.map((col) => selectedRow[col]).join("-")}
           onSubmit={handleSave}
         >
-          <div className="header">
+          <div className={styles.header}>
             <h3>Record details</h3>
-            <div className="controls">
+            <div>
               {editing ? (
                 <>
                   <button
                     type="button"
-                    className="cancel"
+                    className={styles.cancel}
                     onClick={() => setEditing(false)}
                   >
                     Cancel
                   </button>
-                  <button className="save" type="submit">
+                  <button className={styles.save} type="submit">
                     Save
                   </button>
                 </>
               ) : (
                 <button
                   type="button"
-                  className="edit"
+                  className={styles.edit}
                   onClick={() => setEditing(true)}
                 >
                   Edit
@@ -73,7 +73,7 @@ function RowView() {
                         })}
                   ></input>
                 ) : (
-                  <div className="property-value">
+                  <div className={styles.propertyValue}>
                     {formatCellValue(
                       selectedRow[tableProperty.name],
                       tableProperty.type,

@@ -1,4 +1,4 @@
-import "./Icons.css";
+import styles from "./Icons.module.css";
 
 function JungleLogo() {
   return (
@@ -67,11 +67,10 @@ function JungleLogo() {
 
 function LoadingSpinner() {
   return (
-    <div className="loading">
+    <div className={styles.loading} role="status" aria-label="Loading">
       <svg
         viewBox="0 0 50 50"
         xmlns="http://www.w3.org/2000/svg"
-        className="loading-spinner"
       >
         <circle
           cx="25"

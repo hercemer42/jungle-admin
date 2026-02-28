@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Tables } from "./Tables";
+import styles from "./Tables.module.css";
 import { useTablesStore } from "../../store/useTablesStore";
 import { useTableDataStore } from "../../store/useTableDataStore";
 import * as tablesApi from "../../api/tables";
@@ -42,13 +43,13 @@ describe("Tables", () => {
   it("highlights the selected table", () => {
     render(<Tables />);
     const selected = screen.getByText("Customers").closest("li");
-    expect(selected).toHaveClass("selected");
+    expect(selected).toHaveClass(styles.selected);
   });
 
   it("does not highlight unselected tables", () => {
     render(<Tables />);
     const unselected = screen.getByText("Orders").closest("li");
-    expect(unselected).not.toHaveClass("selected");
+    expect(unselected).not.toHaveClass(styles.selected);
   });
 
   it("calls setSelectedTable when a table is clicked", async () => {
@@ -67,12 +68,12 @@ describe("Tables", () => {
   it("shows loading spinner when loading is true", () => {
     useTablesStore.setState({ loading: true });
     render(<Tables />);
-    expect(document.querySelector(".loading-spinner")).toBeInTheDocument();
+    expect(screen.queryByRole("status")).toBeInTheDocument();
   });
 
   it("does not show loading spinner when loading is false", () => {
     useTablesStore.setState({ loading: false, loadTables: async () => {} });
     render(<Tables />);
-    expect(document.querySelector(".loading-spinner")).not.toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 });

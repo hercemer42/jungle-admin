@@ -1,0 +1,21 @@
+.logo {
+  grid-area: logo;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  background: var(--green-800);
+
+  svg {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--neutral-10);
+    letter-spacing: 0.5px;
+  }
+}

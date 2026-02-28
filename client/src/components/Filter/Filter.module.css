@@ -1,6 +1,6 @@
 .filter {
   grid-area: filter;
-  background: #f0f3e6;
+  background: var(--neutral-100);
   padding: 0 0 0 10px;
   display: flex;
   align-items: center;
@@ -12,28 +12,30 @@
     font-size: inherit;
   }
 
-  .filter-input {
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-  }
-
   label {
     display: flex;
     align-items: center;
+
     span {
       margin-right: 5px;
     }
+
     input {
       box-sizing: border-box;
     }
   }
+}
 
-  .removeFilter {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-left: 5px;
-    cursor: pointer;
-    color: #b04040;
-  }
+.filterInput {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+
+.removeFilter {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-left: 5px;
+  cursor: pointer;
+  color: var(--red-500);
 }
