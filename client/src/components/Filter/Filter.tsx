@@ -29,12 +29,13 @@ function FilterInput({ filterName }: { filterName: ColumnFilterProperty }) {
           name="FilterInput"
         />
       </label>
-      <span
+      <button
         className={styles.removeFilter}
         onClick={() => removeFilterProperty(filterName)}
+        aria-label={`Remove ${formatTableAndColumnNames(filterName)} filter`}
       >
         ✕
-      </span>
+      </button>
     </div>
   );
 }
