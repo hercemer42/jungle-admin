@@ -122,3 +122,4 @@ The client runs at `http://localhost:5173` and proxies API requests to the serve
 - Multi-schema support (beyond `public`)
 - Authentication and access control
 - Optimistic locking for concurrent edits
+- Integration, e2e and API layer tests
