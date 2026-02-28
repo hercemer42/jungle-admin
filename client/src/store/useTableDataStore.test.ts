@@ -76,8 +76,10 @@ describe("row saving", () => {
       new Error("Duplicate key"),
     );
 
+    useTableDataStore.setState({ editing: true });
     await useTableDataStore.getState().updateRow({ name: "Bob" });
 
+    expect(useTableDataStore.getState().editing).toBe(true);
     const toasts = useToastStore.getState().toasts;
     expect(toasts).toHaveLength(1);
     expect(toasts[0].message).toBe("Duplicate key");

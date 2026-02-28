@@ -31,6 +31,8 @@ interface TableDataStore {
   selectedRow: Row | null;
   openRowView: (row: Row) => void;
   closeRowView: () => void;
+  editing: boolean;
+  setEditing: (editing: boolean) => void;
   updateRow: (updatedRow: Row) => Promise<void>;
   sortColumn: SortColumn;
   setSortColumn: (column: SortColumn) => void;
@@ -108,6 +110,8 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
     set(() => ({
       selectedRow: null,
     })),
+  editing: false,
+  setEditing: (editing) => set({ editing }),
   updateRow: async (updatedRow) => {
     const selectedRow = get().selectedRow;
     if (!selectedRow) return;
@@ -134,6 +138,7 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
           ),
         };
       });
+      set({ editing: false });
       useToastStore
         .getState()
         .addToast({ message: "Row saved successfully", type: "success" });
