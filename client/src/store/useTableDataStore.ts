@@ -171,7 +171,7 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
       }
     });
   },
-  sortDirection: "asc",
+  sortDirection: null,
   setSortDirection: (direction) =>
     set(() => ({
       sortDirection: direction,

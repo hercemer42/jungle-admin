@@ -37,7 +37,7 @@ const useTablesStore = create<TablesState>((set) => ({
     useTableDataStore.setState({
       columnFilters: {},
       sortColumn: null,
-      sortDirection: "asc",
+      sortDirection: null,
       page: 1,
     });
     await useTableDataStore.getState().loadTableData(tableName);

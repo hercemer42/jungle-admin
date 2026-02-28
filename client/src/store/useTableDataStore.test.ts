@@ -252,7 +252,7 @@ describe("table switching", () => {
 
     const state = useTableDataStore.getState();
     expect(state.sortColumn).toBe(null);
-    expect(state.sortDirection).toBe("asc");
+    expect(state.sortDirection).toBe(null);
   });
 
   it("resets page to 1 when switching tables", async () => {
@@ -272,7 +272,7 @@ describe("table switching", () => {
       1,
       {},
       null,
-      "asc",
+      null,
     );
   });
 });
