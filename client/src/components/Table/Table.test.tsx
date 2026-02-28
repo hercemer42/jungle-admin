@@ -142,6 +142,18 @@ describe("Table", () => {
     }
   });
 
+  it("shows loading spinner when loading is true", () => {
+    useTableDataStore.setState({ loading: true });
+    render(<Table />);
+    expect(document.querySelector(".loading-spinner")).toBeInTheDocument();
+  });
+
+  it("does not show loading spinner when loading is false", () => {
+    useTableDataStore.setState({ loading: false });
+    render(<Table />);
+    expect(document.querySelector(".loading-spinner")).not.toBeInTheDocument();
+  });
+
   it("renders the correct cell values", () => {
     render(<Table />);
     expect(screen.getByText("Quinn Lewis")).toBeInTheDocument();

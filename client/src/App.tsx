@@ -4,7 +4,7 @@ import { Filter } from "./components/Filter/Filter.tsx";
 import { RowView } from "./components/RowView/RowView.tsx";
 import { Toaster } from "./components/UI/Toast/Toast.tsx";
 import { Tables } from "./components/Tables/Tables.tsx";
-import { JungleLogo } from "./components/UI/Icons.tsx";
+import { JungleLogo } from "./components/UI/Icons/Icons.tsx";
 
 function App() {
   return (

@@ -27,6 +27,7 @@ interface TableDataStore {
     filterValue: string,
   ) => void;
   removeFilterProperty: (filterProperty: ColumnFilterProperty) => void;
+  loading: boolean;
   loadTableData: (tableName: string) => Promise<void>;
   selectedRow: Row | null;
   openRowView: (row: Row) => void;
@@ -59,7 +60,9 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
       void _unused;
       return { columnFilters: rest };
     }),
+  loading: false,
   loadTableData: async (tableName: string) => {
+    set({ loading: true });
     try {
       const state = get();
       const tableData = await fetchTable(
@@ -99,6 +102,8 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
       useToastStore
         .getState()
         .addToast({ message: "Failed to load table data", type: "error" });
+    } finally {
+      set({ loading: false });
     }
   },
   selectedRow: null,
@@ -117,9 +122,9 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
     if (!selectedRow) return;
     const selectedTable = useTablesStore.getState().selectedTable;
     const primaryKeys = get().primaryKeyColumns.map((col) => [
-        col,
-        selectedRow[col] as string | number,
-      ]) as [string, string | number][];
+      col,
+      selectedRow[col] as string | number,
+    ]) as [string, string | number][];
 
     if (!selectedTable) return;
     try {

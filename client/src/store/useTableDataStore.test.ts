@@ -136,20 +136,28 @@ describe("column sorting", () => {
 });
 
 describe("table data loading", () => {
-  it("sets the page count and page when loading table data", async () => {
-    const tableData = {
+  it("sets the page count, page, and loading state when loading table data", async () => {
+    let resolvePromise: (value: unknown) => void;
+    vi.mocked(tablesApi.fetchTable).mockImplementation(
+      () => new Promise((resolve) => { resolvePromise = resolve; }),
+    );
+
+    const loadPromise = useTableDataStore.getState().loadTableData("customers");
+    expect(useTableDataStore.getState().loading).toBe(true);
+
+    resolvePromise!({
       fields: tableProperties,
       rows: [fakeRow],
       pageCount: 5,
       page: 2,
-    };
-    vi.mocked(tablesApi.fetchTable).mockResolvedValue(tableData);
-
-    await useTableDataStore.getState().loadTableData("customers");
+      primaryKeyColumns: ["id"],
+    });
+    await loadPromise;
 
     const state = useTableDataStore.getState();
     expect(state.pageCount).toBe(5);
     expect(state.page).toBe(2);
+    expect(state.loading).toBe(false);
   });
 
   it("sets pageCount to 0 when server returns pageCount 0", async () => {
@@ -166,6 +174,14 @@ describe("table data loading", () => {
 
     const state = useTableDataStore.getState();
     expect(state.pageCount).toBe(0);
+  });
+
+  it("sets loading to false when fetch fails", async () => {
+    vi.mocked(tablesApi.fetchTable).mockRejectedValue(new Error("Network error"));
+
+    await useTableDataStore.getState().loadTableData("customers");
+
+    expect(useTableDataStore.getState().loading).toBe(false);
   });
 });
 
