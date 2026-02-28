@@ -3,13 +3,13 @@
   justify-content: center;
   padding: 4px 0;
   flex-shrink: 0;
-  background: white;
-  border-bottom: thin lightgray solid;
+  background: #f5f7f0;
+  border-bottom: thin #c8d0a8 solid;
 
 
   button {
-    background: white;
-    border: 1px solid lightgrey;
+    background: #fbfbf6;
+    border: 1px solid #c8d0a8;
     padding: 5px 10px;
     margin: 0 5px;
     cursor: pointer;

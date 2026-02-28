@@ -1,8 +1,8 @@
 .table-container {
   margin-right: 20px;
-  border-right: thin lightgray solid;
+  border-right: thin #c8d0a8 solid;
   margin-bottom: 20px;
-  background: rgb(228, 228, 228);
+  background: #dae2c4;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -14,12 +14,12 @@
 
   table {
     width: 100%;
-    background: white;
+    background: #fcfcf7;
     border-collapse: collapse;
   }
 
   thead {
-    background: lightgrey;
+    background: #c8d0a8;
   }
 
   tbody tr:first-child td {
@@ -33,7 +33,7 @@
     resize: horizontal;
     white-space: nowrap;
     padding: 5px 16px;
-    border-right: 1px solid #b0b0b0;
+    border-right: 1px solid #b0b898;
 
     &:last-child {
       border-right: none;
@@ -50,7 +50,7 @@
   }
 
   tbody tr:nth-child(even) {
-    background: #f1f1f1;
+    background: #f0f3e6;
   }
 
   .date {

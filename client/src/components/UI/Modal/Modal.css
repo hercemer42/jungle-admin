@@ -22,8 +22,8 @@
     height: 800px;
     max-width: calc(100% -10px);
     max-height: calc(100% -10px);
-    border: thin black solid;
-    background: white;
+    border: thin #7a8a50 solid;
+    background: #fcfcf7;
     padding: 30px;
     overflow: auto;
   }

@@ -3,7 +3,8 @@
   padding-top: 20px;
   padding-left: 20px;
   list-style: none;
-  border: thin lightgray solid;
+  border: thin #c8d0a8 solid;
+  background: #fbfbf6;
 
   li {
     padding: 10px;
@@ -12,11 +13,11 @@
     border-radius: 3px;
 
     &:hover {
-      background-color: #f0f0f0;
+      background-color: #eef0d8;
     }
 
     &.selected {
-      background-color: lightgreen;
+      background-color: #c4d8a0;
     }
   }
 }

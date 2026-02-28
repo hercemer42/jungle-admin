@@ -26,12 +26,12 @@
 
     .edit,
     .save {
-      background: rgb(0, 170, 0);
+      background: #3a7a2d;
       color: white;
     }
 
     .cancel {
-      background: lightgray;
+      background: #d8dcb8;
       margin-right: 10px;
     }
   }

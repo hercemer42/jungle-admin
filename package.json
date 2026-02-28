@@ -1,5 +1,5 @@
 {
-  "name": "admin-panel",
+  "name": "jungle-admin",
   "private": true,
   "scripts": {
     "lint": "npm run lint --prefix client && npm run lint --prefix server",

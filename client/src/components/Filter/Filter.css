@@ -1,6 +1,6 @@
 .filter {
   grid-area: filter;
-  background: white;
+  background: #f0f3e6;
   padding: 0 0 0 10px;
   display: flex;
   align-items: center;
@@ -34,6 +34,6 @@
     font-size: 1.2em;
     margin-left: 5px;
     cursor: pointer;
-    color: red;
+    color: #b04040;
   }
 }
