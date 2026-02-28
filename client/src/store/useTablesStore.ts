@@ -24,10 +24,11 @@ const useTablesStore = create<TablesState>((set) => ({
       if (firstTable) {
         await useTableDataStore.getState().loadTableData(firstTable);
       }
-    } catch {
-      useToastStore
-        .getState()
-        .addToast({ message: "Failed to load tables", type: "error" });
+    } catch (e) {
+      useToastStore.getState().addToast({
+        message: e instanceof Error ? e.message : "Failed to load tables",
+        type: "error",
+      });
     } finally {
       set({ loading: false });
     }

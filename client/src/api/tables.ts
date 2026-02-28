@@ -3,7 +3,8 @@ import type { ColumnFilters, Row } from "../types/types";
 export async function fetchTables() {
   const response = await fetch("/api/tables");
   if (!response.ok) {
-    throw new Error("Failed to fetch tables");
+    const body = await response.json().catch(() => null);
+    throw new Error(body?.error || "Failed to fetch tables");
   }
   const data = await response.json();
   return data.tableNames;
@@ -31,7 +32,8 @@ export async function fetchTable(
   }
   const response = await fetch(`/api/tables/${name}?${queryParams}`);
   if (!response.ok) {
-    throw new Error("Failed to fetch table");
+    const body = await response.json().catch(() => null);
+    throw new Error(body?.error || "Failed to fetch table");
   }
   const data = await response.json();
   return data;

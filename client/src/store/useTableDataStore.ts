@@ -98,10 +98,11 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
       if (tableData.primaryKeyColumns) {
         set({ primaryKeyColumns: tableData.primaryKeyColumns });
       }
-    } catch {
-      useToastStore
-        .getState()
-        .addToast({ message: "Failed to load table data", type: "error" });
+    } catch (e) {
+      useToastStore.getState().addToast({
+        message: e instanceof Error ? e.message : "Failed to load table data",
+        type: "error",
+      });
     } finally {
       set({ loading: false });
     }
