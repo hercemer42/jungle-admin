@@ -1,4 +1,4 @@
-# Admin Panel
+# Jungle Admin
 
 A schema-agnostic admin panel for PostgreSQL databases.
 
@@ -61,7 +61,7 @@ DB_HOST=localhost
 DB_PORT=5433
 DB_USER=admin
 DB_PASSWORD=password
-DB_NAME=admin_panel_dev
+DB_NAME=jungle_admin_dev
 ```
 
 The values above connect to the bundled Docker database. Replace them to use your own PostgreSQL instance.
