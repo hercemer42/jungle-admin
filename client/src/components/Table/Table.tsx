@@ -29,7 +29,17 @@ function Table() {
               {tableProperties.map((property) => (
                 <th
                   key={property.name}
+                  tabIndex={0}
+                  role="button"
+                  aria-sort={
+                    property.name === sortColumn
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                   onClick={() => setSortColumn(property.name)}
+                  onKeyDown={onActivate(() => setSortColumn(property.name))}
                 >
                   {formatTableAndColumnNames(property.name)}
                   {property.name === sortColumn
