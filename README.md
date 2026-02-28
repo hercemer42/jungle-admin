@@ -1,6 +1,6 @@
 # Admin Panel
 
-A full-stack web application for browsing, filtering, sorting, and editing PostgreSQL database tables.
+A schema-agnostic admin panel for PostgreSQL databases.
 
 ## Tech Stack
 
