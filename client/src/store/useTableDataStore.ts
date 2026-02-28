@@ -43,7 +43,7 @@ interface TableDataStore {
   primaryKeyColumns: string[];
 }
 
-const useTableDataStore = create<TableDataStore>((set) => ({
+const useTableDataStore = create<TableDataStore>((set, get) => ({
   rows: [],
   tableProperties: [],
   columnFilters: {},
@@ -59,7 +59,7 @@ const useTableDataStore = create<TableDataStore>((set) => ({
     }),
   loadTableData: async (tableName: string) => {
     try {
-      const state = useTableDataStore.getState();
+      const state = get();
       const tableData = await fetchTable(
         tableName,
         state.page,
@@ -78,7 +78,10 @@ const useTableDataStore = create<TableDataStore>((set) => ({
       }
       if (tableData.rows) {
         set({
-          rows: convertServerDatesToInputDates(tableData.rows, tableData.fields),
+          rows: convertServerDatesToInputDates(
+            tableData.rows,
+            tableData.fields,
+          ),
         });
       }
       if (tableData.pageCount !== undefined) {
@@ -106,12 +109,10 @@ const useTableDataStore = create<TableDataStore>((set) => ({
       selectedRow: null,
     })),
   updateRow: async (updatedRow) => {
-    const selectedRow = useTableDataStore.getState().selectedRow;
+    const selectedRow = get().selectedRow;
     if (!selectedRow) return;
     const selectedTable = useTablesStore.getState().selectedTable;
-    const primaryKeys = useTableDataStore
-      .getState()
-      .primaryKeyColumns.map((col) => [
+    const primaryKeys = get().primaryKeyColumns.map((col) => [
         col,
         selectedRow[col] as string | number,
       ]) as [string, string | number][];
