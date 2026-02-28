@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useTableDataStore } from "./useTableDataStore";
 import { useTablesStore } from "./useTablesStore";
+import { useToastStore } from "./useToastStore";
 import * as tablesApi from "../api/tables";
 
 vi.mock("../api/tables", () => ({
@@ -33,6 +34,7 @@ beforeEach(() => {
     primaryKeyColumns: ["id"],
   });
   useTablesStore.setState({ selectedTable: "customers" });
+  useToastStore.setState({ toasts: [] });
   vi.clearAllMocks();
 });
 
@@ -69,14 +71,17 @@ describe("row saving", () => {
     expect(tablesApi.saveRow).not.toHaveBeenCalled();
   });
 
-  it("propagates errors from saveRow", async () => {
+  it("shows error toast when saveRow fails", async () => {
     vi.mocked(tablesApi.saveRow).mockRejectedValue(
       new Error("Duplicate key"),
     );
 
-    await expect(
-      useTableDataStore.getState().updateRow({ name: "Bob" }),
-    ).rejects.toThrow("Duplicate key");
+    await useTableDataStore.getState().updateRow({ name: "Bob" });
+
+    const toasts = useToastStore.getState().toasts;
+    expect(toasts).toHaveLength(1);
+    expect(toasts[0].message).toBe("Duplicate key");
+    expect(toasts[0].type).toBe("error");
   });
 
   it("converts datetime fields in the saved row", async () => {

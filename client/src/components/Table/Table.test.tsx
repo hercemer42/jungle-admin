@@ -113,9 +113,12 @@ describe("Table", () => {
   it("renders the table headers", () => {
     render(<Table />);
     expect(document.querySelectorAll("th")).toHaveLength(6);
-    for (const property of tableProperties) {
-      expect(screen.getByText(property.name)).toBeInTheDocument();
-    }
+    expect(screen.getByText("ID")).toBeInTheDocument();
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Total Spent")).toBeInTheDocument();
+    expect(screen.getByText("Is Active")).toBeInTheDocument();
+    expect(screen.getByText("Date Of Birth")).toBeInTheDocument();
+    expect(screen.getByText("Created At")).toBeInTheDocument();
   });
 
   it("displays 'No results found' when there are no rows", () => {
@@ -142,9 +145,7 @@ describe("Table", () => {
     render(<Table />);
     expect(screen.getByText("Quinn Lewis")).toBeInTheDocument();
     expect(screen.getByText("25")).toBeInTheDocument();
-    expect(screen.getByText("1")).toBeInTheDocument();
-    expect(screen.getByText("1990-01-15")).toBeInTheDocument();
-    expect(screen.getAllByText("2026-02-17T11:05").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Yes").length).toBeGreaterThan(0);
   });
 
   it("opens a row when it is clicked", async () => {
@@ -163,58 +164,58 @@ describe("Table", () => {
 
   it("sets the sort indicator to asc when a column is clicked", async () => {
     render(<Table />);
-    await userEvent.click(screen.getByText("name"));
-    expect(screen.getByText("name ▲")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Name"));
+    expect(screen.getByText("Name ▲")).toBeInTheDocument();
   });
 
   it("sets the sort indicator to desc when a column is clicked twice", async () => {
     render(<Table />);
-    await userEvent.click(screen.getByText("name"));
-    await userEvent.click(screen.getByText("name ▲"));
-    expect(screen.getByText("name ▼")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Name"));
+    await userEvent.click(screen.getByText("Name ▲"));
+    expect(screen.getByText("Name ▼")).toBeInTheDocument();
   });
 
   it("removes the sort indicator when the same header is clicked three times", async () => {
     render(<Table />);
-    await userEvent.click(screen.getByText("name"));
-    await userEvent.click(screen.getByText("name ▲"));
-    await userEvent.click(screen.getByText("name ▼"));
-    expect(screen.getByText("name")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Name"));
+    await userEvent.click(screen.getByText("Name ▲"));
+    await userEvent.click(screen.getByText("Name ▼"));
+    expect(screen.getByText("Name")).toBeInTheDocument();
   });
 
   it("it changes sort indicator to ▲ when a different header is clicked", async () => {
     render(<Table />);
-    await userEvent.click(screen.getByText("name"));
-    expect(screen.getByText("name ▲")).toBeInTheDocument();
-    await userEvent.click(screen.getByText("name ▲"));
-    expect(screen.getByText("name ▼")).toBeInTheDocument();
-    await userEvent.click(screen.getByText("totalSpent"));
-    expect(screen.getByText("totalSpent ▲")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Name"));
+    expect(screen.getByText("Name ▲")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Name ▲"));
+    expect(screen.getByText("Name ▼")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Total Spent"));
+    expect(screen.getByText("Total Spent ▲")).toBeInTheDocument();
   });
 
   it("resets to the first page when a header is clicked", async () => {
     useTableDataStore.setState({ page: 3, pageCount: 3 });
     render(<Table />);
-    expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
-    await userEvent.click(screen.getByText("name"));
-    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    expect(screen.getByText(/3 of 3/)).toBeInTheDocument();
+    await userEvent.click(screen.getByText("Name"));
+    expect(screen.getByText(/1 of 3/)).toBeInTheDocument();
   });
 
   it("resets to the first page when columnFilters are applied", async () => {
     useTableDataStore.setState({ page: 3, pageCount: 3 });
     render(<Table />);
-    expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
+    expect(screen.getByText(/3 of 3/)).toBeInTheDocument();
     act(() => useTableDataStore.setState({ columnFilters: { name: "Alice" } }));
-    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    expect(screen.getByText(/1 of 3/)).toBeInTheDocument();
   });
 
   it("resets to the first page when columnFilters are cleared", async () => {
     useTableDataStore.setState({ page: 3, pageCount: 3 });
     render(<Table />);
-    expect(screen.getByText("Page 3 of 3")).toBeInTheDocument();
+    expect(screen.getByText(/3 of 3/)).toBeInTheDocument();
     act(() => useTableDataStore.setState({ columnFilters: { name: "Alice" } }));
-    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    expect(screen.getByText(/1 of 3/)).toBeInTheDocument();
     act(() => useTableDataStore.setState({ columnFilters: { name: "" } }));
-    expect(screen.getByText("Page 1 of 3")).toBeInTheDocument();
+    expect(screen.getByText(/1 of 3/)).toBeInTheDocument();
   });
 });

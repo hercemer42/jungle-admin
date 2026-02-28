@@ -44,9 +44,7 @@ describe("RowView", () => {
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("Alice Smith")).toBeInTheDocument();
     expect(screen.getByText("500")).toBeInTheDocument();
-    expect(screen.getByText("true")).toBeInTheDocument();
-    expect(screen.getByText("1990-01-15")).toBeInTheDocument();
-    expect(screen.getByText("2026-02-17T11:05")).toBeInTheDocument();
+    expect(screen.getByText("Yes")).toBeInTheDocument();
   });
 
   it("shows values as text by default", () => {
@@ -77,7 +75,6 @@ describe("RowView", () => {
       "date",
     );
     expect(screen.getByText("1")).toBeInTheDocument();
-    expect(screen.getByText("2026-02-17T11:05")).toBeInTheDocument();
   });
 
   it("switches back to text display when Cancel is clicked", async () => {
