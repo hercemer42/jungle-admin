@@ -1,7 +1,7 @@
 import "./Table.css";
 import { useTablesStore } from "../../store/useTablesStore";
 import { useTableDataStore } from "../../store/useTableDataStore";
-import { formatCellValue, formatTableAndColumnNames } from "../../utils/utils";
+import { formatCellValue, formatTableAndColumnNames, onActivate } from "../../utils/utils";
 import { Pagination } from "../Pagination/Pagination";
 import { LoadingSpinner } from "../UI/Icons/Icons";
 
@@ -46,7 +46,10 @@ function Table() {
               rows.map((row) => (
                 <tr
                   key={primaryKeyColumns.map((col) => row[col]).join("-")}
+                  tabIndex={0}
+                  role="button"
                   onClick={() => openRowView(row)}
+                  onKeyDown={onActivate(() => openRowView(row))}
                 >
                   {tableProperties.map((property) => (
                     <td

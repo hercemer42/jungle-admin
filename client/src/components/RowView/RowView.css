@@ -24,6 +24,19 @@
     justify-content: space-between;
     align-items: center;
 
+    button {
+      font-size: 16px;
+      padding: 6px 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 3px;
+
+      &:focus-visible {
+        outline: 2px solid #3a7a2d;
+        outline-offset: 2px;
+      }
+    }
+
     .edit,
     .save {
       background: #3a7a2d;

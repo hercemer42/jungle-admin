@@ -114,6 +114,7 @@ const useTableDataStore = create<TableDataStore>((set, get) => ({
   closeRowView: () =>
     set(() => ({
       selectedRow: null,
+      editing: false,
     })),
   editing: false,
   setEditing: (editing) => set({ editing }),

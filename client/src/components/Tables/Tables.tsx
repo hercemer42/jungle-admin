@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTablesStore } from "../../store/useTablesStore";
 import "./Tables.css";
-import { formatTableAndColumnNames } from "../../utils/utils";
+import { formatTableAndColumnNames, onActivate } from "../../utils/utils";
 import { LoadingSpinner } from "../UI/Icons/Icons";
 
 function Tables() {
@@ -22,8 +22,11 @@ function Tables() {
         {tables.map((tableName) => (
           <li
             key={tableName}
+            tabIndex={0}
+            role="button"
             className={`table-card ${selectedTable === tableName ? "selected" : ""}`}
             onClick={() => setSelectedTable(tableName)}
+            onKeyDown={onActivate(() => setSelectedTable(tableName))}
           >
             {formatTableAndColumnNames(tableName)}
           </li>

@@ -1,3 +1,4 @@
+import type React from "react";
 import type { ColumnFilters, Field, Row } from "../types/types";
 
 const convertServerTypeToInputType = (serverTypes: Field[]): Field[] => {
@@ -78,6 +79,13 @@ const formatTableAndColumnNames = (name: string) => {
     .replace(/\bId\b/g, "ID");
 };
 
+const onActivate = (callback: () => void) => (e: React.KeyboardEvent) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    callback();
+  }
+};
+
 export {
   convertServerTypeToInputType,
   convertServerDatesToInputDates,
@@ -85,4 +93,5 @@ export {
   debounce,
   formatCellValue,
   formatTableAndColumnNames,
+  onActivate,
 };

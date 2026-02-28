@@ -152,4 +152,13 @@ describe("RowView", () => {
 
     expect(useTableDataStore.getState().selectedRow).toBeNull();
   });
+
+  it("resets editing state when closing the modal", async () => {
+    useTableDataStore.setState({ editing: true });
+    render(<RowView />);
+
+    await userEvent.click(screen.getByText("X"));
+
+    expect(useTableDataStore.getState().editing).toBe(false);
+  });
 });
